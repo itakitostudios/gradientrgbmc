@@ -21,10 +21,12 @@
   .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .sec { margin-bottom: 14px; }
   .sec:last-child { margin-bottom: 0; }
-  select, textarea {
+  select, textarea, input[type=number], input[type=text] {
     padding: 9px; border-radius: 8px; border: 1px solid #333;
     background: #1c1c1c; color: #eee; font-size: 15px; font-family: inherit;
   }
+  input[type=number] { width: 90px; }
+  input[type=text] { width: 180px; }
   textarea { width: 100%; resize: vertical; }
   input[type=color] { width: 46px; height: 38px; border: none; background: none; cursor: pointer; padding: 0; }
   .checks label { color: #ddd; display: inline-flex; gap: 5px; align-items: center; font-size: 14px; }
@@ -38,7 +40,6 @@
   .btn.emo { font-size: 19px; padding: 3px 8px; }
   .btn.borrar { color: #f87171; }
 
-  /* Cuadro grande con la palabra */
   .big {
     background: #000; border: 1px solid #2a2a2a; border-radius: 14px;
     padding: 20px; margin-bottom: 14px;
@@ -51,9 +52,8 @@
   }
   .pv-big .linea { white-space: pre-wrap; }
   .vacio { color: #666; font-size: 14px; text-align: center; font-family: system-ui, sans-serif; }
-  .big .emojis { margin: 14px 0 10px; }
+  .emojis { margin: 14px 0 10px; }
 
-  /* Fila: cuadrito de colores + rectángulo de código */
   .fila2 { display: grid; grid-template-columns: 170px 1fr; gap: 14px; margin-bottom: 14px; }
   .sq {
     background: #181818; border: 1px solid #2a2a2a; border-radius: 12px;
@@ -68,12 +68,9 @@
   .codigo {
     background: #1c1c1c; border: 1px solid #333; border-radius: 8px;
     padding: 10px; font-family: monospace; font-size: 13px; color: #d4d4d8;
-    white-space: pre-wrap; word-break: break-all; min-height: 60px;
+    white-space: pre-wrap; word-break: break-all; min-height: 60px; flex: 1;
   }
-  .fila { display: flex; gap: 8px; align-items: flex-start; }
-  .fila .codigo { flex: 1; }
-
-  /* Favoritos en cuadritos */
+  .fila { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; }
   .favgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
   .tile {
     aspect-ratio: 1; background: #1c1c1c; border: 1px solid #333; border-radius: 10px;
@@ -87,6 +84,7 @@
     padding: 2px 4px; cursor: pointer;
   }
   .aviso { font-size: 12px; color: #777; }
+  .anim-off { opacity: .45; }
   @media (max-width: 640px) {
     .fila2 { grid-template-columns: 1fr; }
     .sq { aspect-ratio: auto; }
@@ -154,6 +152,22 @@
     <h3>Presets</h3>
     <div class="row" id="presets"></div>
   </div>
+
+  <div class="sec">
+    <h3>Animación para TAB</h3>
+    <div class="row checks">
+      <label><input type="checkbox" id="anim"> Activar animación (degradado que se mueve)</label>
+    </div>
+    <div class="row" id="animPanel" style="margin-top:8px">
+      <label>Frames:</label>
+      <input type="number" id="animFrames" value="12" min="2" max="60">
+      <label>Intervalo (seg):</label>
+      <input type="number" id="animInt" value="0.2" min="0.05" max="5" step="0.05">
+      <label>Nombre:</label>
+      <input type="text" id="animNombre" value="DEGRADADO">
+    </div>
+    <p class="aviso" style="margin:6px 0 0">La animación siempre sale en &amp;#RRGGBB, que es lo que TAB soporta.</p>
+  </div>
 </div>
 
 <!-- CUADRO GRANDE: la palabra -->
@@ -177,13 +191,13 @@
   <p class="aviso" style="margin:6px 0 0">Escribe varias líneas para generar un código por cada una.</p>
 </div>
 
-<!-- DEBAJO: cuadrito de colores + rectángulo de código -->
+<!-- DEBAJO: colores + código -->
 <div class="fila2">
   <div class="sq" id="chips"></div>
   <div class="rect">
-    <h3>Código para copiar</h3>
+    <h3 id="tituloCodigo">Código para copiar</h3>
     <div id="salidas"></div>
-    <div class="aviso">Pégalo en el plugin, por ejemplo:<br>/hologram edit Coinshop setline 1 &lt;código&gt;</div>
+    <div class="aviso" id="avisoCodigo">Pégalo en el plugin, por ejemplo:<br>/hologram edit Coinshop setline 1 &lt;código&gt;</div>
   </div>
 </div>
 
@@ -231,6 +245,12 @@ function colorAt(stops, t) {
   const a = hexToRgb(stops[i]), b = hexToRgb(stops[i + 1]);
   return a.map((v, k) => v + (b[k] - v) * f);
 }
+// Degradado cíclico: el último color vuelve al primero, para que la animación sea continua
+function colorCiclico(stops, t) {
+  const loop = stops.concat([stops[0]]);
+  t = ((t % 1) + 1) % 1;
+  return colorAt(loop, t);
+}
 function separar(texto) {
   if (window.Intl && Intl.Segmenter) {
     const seg = new Intl.Segmenter('es', { granularity: 'grapheme' });
@@ -271,19 +291,31 @@ const FK = ['l', 'o', 'n', 'm', 'k'];
 const FMT_MM = { l:'bold', o:'italic', n:'underlined', m:'strikethrough', k:'obfuscated' };
 let stops = ['#ff4ecd', '#8b5cf6', '#22d3ee'];
 let codigos = [];
+let lineasFrames = [];   // frames por línea (solo en animación)
+let frameActual = 0;
+let timerAnim = null;
 
 /* ---------- Construcción de caracteres ---------- */
-function construirItems(linea, cfg) {
+// off = null -> degradado normal; off = número -> frame de animación (cíclico)
+function construirItems(linea, cfg, off = null) {
   const chars = separar(linea);
   const estiloFn = ESTILOS[cfg.estilo] || ESTILOS.normal;
   const cuentan = chars.filter(c => c !== ' ').length;
   const items = [];
   let idx = 0;
   for (const raw of chars) {
-    const t = cuentan <= 1 ? 0 : idx / (cuentan - 1);
-    const rgbv = cfg.modo === 'arcoiris'
-      ? hslToRgb((idx / Math.max(cuentan, 1)) * 360, 100, 65)
-      : colorAt(cfg.stops, t);
+    let rgbv;
+    if (off !== null) {
+      const p = idx / Math.max(cuentan, 1) + off;
+      rgbv = cfg.modo === 'arcoiris'
+        ? hslToRgb(((p % 1) + 1) % 1 * 360, 100, 65)
+        : colorCiclico(cfg.stops, p);
+    } else {
+      const t = cuentan <= 1 ? 0 : idx / (cuentan - 1);
+      rgbv = cfg.modo === 'arcoiris'
+        ? hslToRgb((idx / Math.max(cuentan, 1)) * 360, 100, 65)
+        : colorAt(cfg.stops, t);
+    }
     const color = '#' + rgbv.map(hex2).join('');
     const ch = raw === ' ' ? ' ' : estiloFn(raw);
     items.push({ ch, color, fmt: { ...cfg.fmt } });
@@ -317,6 +349,7 @@ function encode(items, salida) {
     return `<color:${r.color}>${open}${texto}${close}</color>`;
   }).join('');
 }
+const yamlStr = s => '"' + s.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
 
 /* ---------- Vista previa ---------- */
 function htmlPreview(items) {
@@ -351,32 +384,100 @@ function leerCfg() {
     modo: $('modo').value,
     estilo: $('estilo').value,
     salida: $('salida').value,
-    fmt: { l: $('f-l').checked, o: $('f-o').checked, n: $('f-n').checked, m: $('f-m').checked, k: $('f-k').checked }
+    fmt: { l: $('f-l').checked, o: $('f-o').checked, n: $('f-n').checked, m: $('f-m').checked, k: $('f-k').checked },
+    anim: $('anim').checked,
+    frames: Math.max(2, Math.min(60, parseInt($('animFrames').value) || 12)),
+    intervalo: parseFloat($('animInt').value) || 0.2,
+    nombre: $('animNombre').value.trim() || 'DEGRADADO'
   };
 }
 
 /* ---------- Render principal ---------- */
 function render() {
   const cfg = leerCfg();
+  $('animPanel').classList.toggle('anim-off', !cfg.anim);
   const lineas = cfg.texto.split('\n').map(l => l.trim()).filter(l => l.length);
   codigos = [];
-  let pv = '', sv = '';
+  lineasFrames = [];
+  let sv = '';
+
   if (!lineas.length) {
-    $('previews').innerHTML = '<div class="vacio">Escribe algo abajo.</div>';
     $('salidas').innerHTML = '';
+    $('previews').innerHTML = '<div class="vacio">Escribe algo abajo.</div>';
+    renderChips();
+    stopTimer();
+    return;
+  }
+
+  if (cfg.anim) {
+    $('tituloCodigo').textContent = 'Código para TAB (animations.yml)';
+    lineas.forEach((l, i) => {
+      const frames = [];
+      for (let k = 0; k < cfg.frames; k++) {
+        const items = construirItems(l, cfg, k / cfg.frames);
+        frames.push(items);
+      }
+      lineasFrames.push(frames);
+      const nombre = lineas.length > 1 ? `${cfg.nombre}_${i + 1}` : cfg.nombre;
+      const yaml =
+        `animations:\n  ${nombre}:\n    texts:\n` +
+        frames.map(fr => `      - ${yamlStr(encode(fr, 'hex'))}`).join('\n') +
+        `\n    change-interval: ${cfg.intervalo}`;
+      codigos.push(yaml);
+      sv += `<div class="fila"><div class="codigo">${escapeHtml(yaml)}</div>` +
+            `<button class="btn" onclick="copiarLinea(${i}, this)">Copiar</button></div>`;
+    });
+    $('avisoCodigo').innerHTML =
+      'Pega el bloque en <b>animations.yml</b> de TAB y úsalo en header o footer con:<br>' +
+      '<code>%animation:NOMBRE%</code>';
+    frameActual = 0;
+    startTimer(cfg.intervalo);
   } else {
+    $('tituloCodigo').textContent = 'Código para copiar';
+    $('avisoCodigo').innerHTML = 'Pégalo en el plugin, por ejemplo:<br>/hologram edit Coinshop setline 1 &lt;código&gt;';
     lineas.forEach((l, i) => {
       const items = construirItems(l, cfg);
       const code = encode(items, cfg.salida);
       codigos.push(code);
-      pv += `<div class="linea">${htmlPreview(items)}</div>`;
-      sv += `<div class="fila" style="margin-bottom:8px"><div class="codigo">${escapeHtml(code)}</div>` +
+      sv += `<div class="fila"><div class="codigo">${escapeHtml(code)}</div>` +
             `<button class="btn" onclick="copiarLinea(${i}, this)">Copiar</button></div>`;
     });
-    $('previews').innerHTML = pv;
-    $('salidas').innerHTML = sv;
+    stopTimer();
   }
+
+  $('salidas').innerHTML = sv;
+  renderPreview(cfg.anim ? frameActual : null);
   renderChips();
+}
+
+/* ---------- Vista previa grande (con animación) ---------- */
+function renderPreview(frameIdx) {
+  const cfg = leerCfg();
+  const lineas = cfg.texto.split('\n').map(l => l.trim()).filter(l => l.length);
+  if (!lineas.length) return;
+  let html = '';
+  if (cfg.anim && lineasFrames.length) {
+    html = lineasFrames.map(frames => {
+      const fr = frames[frameIdx % frames.length];
+      return `<div class="linea">${htmlPreview(fr)}</div>`;
+    }).join('');
+  } else {
+    html = lineas.map(l => `<div class="linea">${htmlPreview(construirItems(l, cfg))}</div>`).join('');
+  }
+  $('previews').innerHTML = html;
+}
+function startTimer(seg) {
+  stopTimer();
+  timerAnim = setInterval(() => {
+    const cfg = leerCfg();
+    if (!cfg.anim || !lineasFrames.length) return;
+    const total = lineasFrames[0].length;
+    frameActual = (frameActual + 1) % total;
+    renderPreview(frameActual);
+  }, Math.max(50, seg * 1000));
+}
+function stopTimer() {
+  if (timerAnim) { clearInterval(timerAnim); timerAnim = null; }
 }
 
 /* ---------- Cuadrito de colores ---------- */
@@ -487,6 +588,10 @@ function cargarFav(fav) {
   $('estilo').value = fav.estilo;
   $('salida').value = fav.salida;
   setFmt(fav.fmt);
+  $('anim').checked = !!fav.anim;
+  if (fav.frames) $('animFrames').value = fav.frames;
+  if (fav.intervalo) $('animInt').value = fav.intervalo;
+  if (fav.nombre) $('animNombre').value = fav.nombre;
   renderStops();
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -551,8 +656,10 @@ $('guardarFav').onclick = guardarFav;
 $('ver').onclick = verConvertidor;
 $('pasar').onclick = pasarAlEditor;
 
-['texto', 'f-l', 'f-o', 'f-n', 'f-m', 'f-k'].forEach(id => $(id).addEventListener('input', render));
+['texto', 'f-l', 'f-o', 'f-n', 'f-m', 'f-k', 'animFrames', 'animNombre'].forEach(id => $(id).addEventListener('input', render));
+['animInt'].forEach(id => $(id).addEventListener('input', render));
 ['modo', 'estilo', 'salida'].forEach(id => $(id).addEventListener('change', render));
+$('anim').addEventListener('change', render);
 
 /* ---------- Inicio ---------- */
 renderStops();
