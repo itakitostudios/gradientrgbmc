@@ -15,27 +15,34 @@
   }
   h1 { font-size: 22px; }
   .row { display: flex; gap: 12px; align-items: center; margin: 12px 0; flex-wrap: wrap; }
-  input[type=text] {
+  input[type=text], select {
     flex: 1; padding: 10px; border-radius: 8px;
     border: 1px solid #333; background: #1c1c1c; color: #eee; font-size: 16px;
   }
+  select { flex: 0 0 auto; }
   input[type=color] { width: 60px; height: 40px; border: none; background: none; cursor: pointer; }
+  .emojis button {
+    margin: 0; padding: 6px 10px; font-size: 20px;
+    background: #1c1c1c; border: 1px solid #333;
+  }
+  .emojis button:hover { background: #2a2a2a; }
   .preview {
     background: #000; border-radius: 10px; padding: 30px;
     text-align: center; font-size: 40px; font-family: 'Courier New', monospace;
-    margin: 20px 0; white-space: pre-wrap; word-break: break-all;
+    margin: 20px 0; white-space: pre-wrap; word-break: break-all; min-height: 60px;
   }
   .output {
     background: #1c1c1c; border: 1px solid #333; border-radius: 8px;
     padding: 12px; font-family: monospace; font-size: 14px;
     word-break: break-all; white-space: pre-wrap;
   }
-  button {
+  button.copiar {
     margin-top: 10px; padding: 10px 18px; border: none; border-radius: 8px;
     background: #7c3aed; color: white; font-weight: bold; cursor: pointer;
   }
-  button:hover { background: #6d28d9; }
+  button.copiar:hover { background: #6d28d9; }
   label { font-size: 14px; color: #aaa; }
+  .aviso { font-size: 13px; color: #888; margin-top: 16px; }
 </style>
 </head>
 <body>
@@ -47,19 +54,50 @@
   <input type="text" id="texto" value="POINTSHOP">
 </div>
 
+<div class="row emojis">
+  <label>Emojis:</label>
+  <button type="button" data-e="🔥">🔥</button>
+  <button type="button" data-e="💎">💎</button>
+  <button type="button" data-e="👑">👑</button>
+  <button type="button" data-e="⭐">⭐</button>
+  <button type="button" data-e="⚡">⚡</button>
+  <button type="button" data-e="🏆">🏆</button>
+  <button type="button" data-e="❤️">❤️</button>
+  <button type="button" data-e="🎮">🎮</button>
+  <button type="button" data-e="💰">💰</button>
+  <button type="button" data-e="🛡️">🛡️</button>
+</div>
+
+<div class="row">
+  <label>Estilo:</label>
+  <select id="estilo">
+    <option value="normal">Normal</option>
+    <option value="mini">Mini Caps (ᴍɪɴɪ)</option>
+    <option value="negrita">Negrita (𝐁𝐨𝐥𝐝)</option>
+    <option value="cursiva">Cursiva (𝘐𝘵𝘢𝘭𝘪𝘤)</option>
+  </select>
+</div>
+
 <div class="row">
   <label>Color 1:</label>
   <input type="color" id="c1" value="#c084fc">
   <label>Color 2:</label>
   <input type="color" id="c2" value="#818cf8">
-  <label><input type="checkbox" id="negrita" checked> Negrita (&amp;l)</label>
+  <label><input type="checkbox" id="negrita" checked> Negrita del plugin (&amp;l)</label>
 </div>
 
 <div class="preview" id="preview"></div>
 
 <label>Código para pegar en el plugin:</label>
 <div class="output" id="codigo"></div>
-<button onclick="copiar()">Copiar código</button>
+<button class="copiar" onclick="copiar()">Copiar código</button>
+
+<p class="aviso">
+  Los emojis salen con el degradado, pero en Minecraft la mayoría no se ve a color
+  ni se muestra si el servidor no tiene un resource pack que los soporte.
+  Las letras Mini Caps y Negrita/Cursiva son caracteres Unicode, así que el servidor
+  debe poder mostrarlos.
+</p>
 
 <script>
   const $ = id => document.getElementById(id);
@@ -67,13 +105,51 @@
   const hex2 = n => Math.round(n).toString(16).padStart(2, '0').toUpperCase();
   const rgb = h => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16));
 
+  const MINI = {
+    a:'ᴀ', b:'ʙ', c:'ᴄ', d:'ᴅ', e:'ᴇ', f:'ꜰ', g:'ɢ', h:'ʜ', i:'ɪ', j:'ᴊ',
+    k:'ᴋ', l:'ʟ', m:'ᴍ', n:'ɴ', o:'ᴏ', p:'ᴘ', q:'ǫ', r:'ʀ', s:'ꜱ', t:'ᴛ',
+    u:'ᴜ', v:'ᴠ', w:'ᴡ', x:'x', y:'ʏ', z:'ᴢ'
+  };
+
+  function aplicarEstilo(ch, estilo) {
+    if (estilo === 'mini') {
+      const low = ch.toLowerCase();
+      return MINI[low] || ch;
+    }
+    if (estilo === 'negrita') {
+      const c = ch.codePointAt(0);
+      if (c >= 65 && c <= 90)  return String.fromCodePoint(0x1D400 + (c - 65));
+      if (c >= 97 && c <= 122) return String.fromCodePoint(0x1D41A + (c - 97));
+      if (c >= 48 && c <= 57)  return String.fromCodePoint(0x1D7CE + (c - 48));
+      return ch;
+    }
+    if (estilo === 'cursiva') {
+      const c = ch.codePointAt(0);
+      if (ch === 'h') return 'ℎ';
+      if (c >= 65 && c <= 90)  return String.fromCodePoint(0x1D434 + (c - 65));
+      if (c >= 97 && c <= 122) return String.fromCodePoint(0x1D44E + (c - 97));
+      return ch;
+    }
+    return ch;
+  }
+
+  // Separa en "caracteres visibles" (un emoji con variación o ZWJ cuenta como uno)
+  function separar(texto) {
+    if (window.Intl && Intl.Segmenter) {
+      const seg = new Intl.Segmenter('es', { granularity: 'grapheme' });
+      return [...seg.segment(texto)].map(s => s.segment);
+    }
+    return [...texto];
+  }
+
   function generar() {
     const texto = $('texto').value || 'TEXTO';
+    const estilo = $('estilo').value;
     const [r1, g1, b1] = rgb($('c1').value);
     const [r2, g2, b2] = rgb($('c2').value);
     const negrita = $('negrita').checked;
 
-    const chars = [...texto];
+    const chars = separar(texto);
     const total = chars.filter(c => c !== ' ').length;
     let idx = 0;
     let codigo = '';
@@ -89,10 +165,12 @@
       const r = r1 + (r2 - r1) * t;
       const g = g1 + (g2 - g1) * t;
       const b = b1 + (b2 - b1) * t;
-      const hex = '#' + hex2(r) + hex2(g) + hex2(b);
+      const hex = hex2(r) + hex2(g) + hex2(b);
 
-      codigo += '&#' + hex.slice(1) + (negrita ? '&l' : '') + ch;
-      html += `<span style="color:${hex};font-weight:${negrita ? 900 : 400}">${ch}</span>`;
+      const visible = aplicarEstilo(ch, estilo);
+
+      codigo += '&#' + hex + (negrita ? '&l' : '') + visible;
+      html += `<span style="color:#${hex};font-weight:${negrita ? 900 : 400}">${visible}</span>`;
       idx++;
     }
 
@@ -104,7 +182,18 @@
     navigator.clipboard.writeText($('codigo').textContent);
   }
 
-  ['texto', 'c1', 'c2', 'negrita'].forEach(id => $(id).addEventListener('input', generar));
+  document.querySelectorAll('.emojis button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      $('texto').value += btn.dataset.e;
+      generar();
+    });
+  });
+
+  ['texto', 'estilo', 'c1', 'c2', 'negrita'].forEach(id => {
+    $(id).addEventListener('input', generar);
+    $(id).addEventListener('change', generar);
+  });
+
   generar();
 </script>
 
