@@ -8,61 +8,158 @@
   * { box-sizing: border-box; }
   body {
     font-family: system-ui, sans-serif;
-    background: #111; color: #eee;
-    max-width: 820px; margin: 30px auto; padding: 0 16px;
+    background: #0f0f12; color: #eee;
+    max-width: 900px; margin: 24px auto; padding: 0 16px;
   }
-  h1 { font-size: 22px; margin-bottom: 4px; }
-  h2 { font-size: 16px; color: #c4b5fd; margin: 26px 0 8px; border-bottom: 1px solid #272727; padding-bottom: 6px; }
-  .card { background: #181818; border: 1px solid #2a2a2a; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+  h1 { font-size: 22px; margin: 0 0 14px; }
+  h3 { font-size: 13px; color: #c4b5fd; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 1px; }
   label { font-size: 13px; color: #aaa; }
-  textarea, select, input[type=text] {
-    width: 100%; padding: 10px; border-radius: 8px;
-    border: 1px solid #333; background: #1c1c1c; color: #eee; font-size: 16px; font-family: inherit;
+  .panel {
+    background: #181818; border: 1px solid #2a2a2a; border-radius: 12px;
+    padding: 14px; margin-bottom: 14px;
   }
-  textarea { resize: vertical; min-height: 60px; }
-  select { width: auto; }
-  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
-  input[type=color] { width: 52px; height: 40px; border: none; background: none; cursor: pointer; padding: 0; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .sec { margin-bottom: 14px; }
+  .sec:last-child { margin-bottom: 0; }
+  select, textarea {
+    padding: 9px; border-radius: 8px; border: 1px solid #333;
+    background: #1c1c1c; color: #eee; font-size: 15px; font-family: inherit;
+  }
+  textarea { width: 100%; resize: vertical; }
+  input[type=color] { width: 46px; height: 38px; border: none; background: none; cursor: pointer; padding: 0; }
+  .checks label { color: #ddd; display: inline-flex; gap: 5px; align-items: center; font-size: 14px; }
   .btn {
-    padding: 8px 14px; border: 1px solid #333; border-radius: 8px;
+    padding: 8px 12px; border: 1px solid #333; border-radius: 8px;
     background: #222; color: #eee; font-size: 14px; cursor: pointer;
   }
   .btn:hover { background: #2c2c2c; }
   .btn.principal { background: #7c3aed; border-color: #7c3aed; font-weight: bold; }
   .btn.principal:hover { background: #6d28d9; }
-  .btn.emo { font-size: 20px; padding: 4px 9px; }
+  .btn.emo { font-size: 19px; padding: 3px 8px; }
   .btn.borrar { color: #f87171; }
-  .preview-zona {
-    background: rgba(0,0,0,.55); border-radius: 10px; padding: 14px 18px;
-    margin: 8px 0; min-height: 60px;
+
+  /* Cuadro grande con la palabra */
+  .big {
+    background: #000; border: 1px solid #2a2a2a; border-radius: 14px;
+    padding: 20px; margin-bottom: 14px;
   }
-  .pv {
-    font-family: 'Courier New', monospace; font-size: 26px; font-weight: bold;
-    text-shadow: 2px 2px 0 rgba(0,0,0,.6); word-break: break-word; white-space: pre-wrap;
-    line-height: 1.5; padding: 4px 0;
+  .pv-big {
+    font-family: 'Courier New', monospace; font-size: 54px; font-weight: bold;
+    text-shadow: 3px 3px 0 rgba(0,0,0,.6); text-align: center;
+    min-height: 90px; display: flex; flex-direction: column; justify-content: center;
+    line-height: 1.3; word-break: break-word;
   }
-  .fila { display: flex; gap: 8px; align-items: flex-start; margin: 6px 0; }
-  pre {
-    flex: 1; background: #1c1c1c; border: 1px solid #333; border-radius: 8px;
-    padding: 10px; margin: 0; white-space: pre-wrap; word-break: break-all;
-    font-size: 13px; color: #d4d4d8;
+  .pv-big .linea { white-space: pre-wrap; }
+  .vacio { color: #666; font-size: 14px; text-align: center; font-family: system-ui, sans-serif; }
+  .big .emojis { margin: 14px 0 10px; }
+
+  /* Fila: cuadrito de colores + rectángulo de código */
+  .fila2 { display: grid; grid-template-columns: 170px 1fr; gap: 14px; margin-bottom: 14px; }
+  .sq {
+    background: #181818; border: 1px solid #2a2a2a; border-radius: 12px;
+    padding: 12px; aspect-ratio: 1; display: flex; flex-direction: column; gap: 6px; overflow: auto;
   }
-  .checks label { color: #ddd; display: inline-flex; gap: 5px; align-items: center; font-size: 14px; }
-  .presets { display: flex; flex-wrap: wrap; gap: 6px; }
-  .aviso { font-size: 12px; color: #777; margin-top: 8px; }
-  .vacio { color: #666; font-size: 14px; }
+  .chip { display: flex; align-items: center; gap: 8px; font-family: monospace; font-size: 13px; }
+  .chip span.c { width: 26px; height: 26px; border-radius: 6px; border: 1px solid #333; flex: 0 0 auto; }
+  .rect {
+    background: #181818; border: 1px solid #2a2a2a; border-radius: 12px; padding: 12px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .codigo {
+    background: #1c1c1c; border: 1px solid #333; border-radius: 8px;
+    padding: 10px; font-family: monospace; font-size: 13px; color: #d4d4d8;
+    white-space: pre-wrap; word-break: break-all; min-height: 60px;
+  }
+  .fila { display: flex; gap: 8px; align-items: flex-start; }
+  .fila .codigo { flex: 1; }
+
+  /* Favoritos en cuadritos */
+  .favgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+  .tile {
+    aspect-ratio: 1; background: #1c1c1c; border: 1px solid #333; border-radius: 10px;
+    color: #eee; font-size: 13px; cursor: pointer; padding: 8px; position: relative;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    word-break: break-word; overflow: hidden;
+  }
+  .tile:hover { background: #262626; }
+  .tile .x {
+    position: absolute; top: 2px; right: 4px; color: #f87171; font-size: 16px;
+    padding: 2px 4px; cursor: pointer;
+  }
+  .aviso { font-size: 12px; color: #777; }
+  @media (max-width: 640px) {
+    .fila2 { grid-template-columns: 1fr; }
+    .sq { aspect-ratio: auto; }
+    .pv-big { font-size: 36px; }
+  }
 </style>
 </head>
 <body>
 
 <h1>Generador de degradados para Minecraft</h1>
-<p class="aviso" style="margin-top:0">Escribe varias líneas para crear un código por cada una.</p>
 
-<h2>1. Texto</h2>
-<div class="card">
-  <textarea id="texto" rows="2">DEGRADADO</textarea>
-  <div class="row" style="margin-top:10px">
-    <label>Emojis:</label>
+<!-- ARRIBA: colores, estilo y formato -->
+<div class="panel">
+  <div class="sec">
+    <h3>Colores</h3>
+    <div class="row" id="stops"></div>
+    <div class="row" style="margin-top:8px">
+      <button class="btn" id="agregar">+ Color</button>
+      <button class="btn" id="quitar">− Color</button>
+      <button class="btn" id="invertir">⇄ Invertir</button>
+      <label>Modo:</label>
+      <select id="modo">
+        <option value="degradado">Degradado</option>
+        <option value="arcoiris">Arcoíris automático</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h3>Estilo de letra</h3>
+    <select id="estilo">
+      <option value="normal">Normal</option>
+      <option value="mini">Mini Caps ᴍɪɴɪ</option>
+      <option value="negrita">Negrita 𝐁𝐨𝐥𝐝</option>
+      <option value="cursiva">Cursiva 𝘐𝘵𝘢𝘭𝘪𝘤</option>
+      <option value="negritacursiva">Negrita cursiva 𝑩𝒐𝒍𝒅</option>
+      <option value="gotica">Gótica 𝔊𝔬𝔱𝔦𝔠</option>
+      <option value="monoespacio">Monoespacio 𝙼𝚘𝚗𝚘</option>
+      <option value="circulo">Círculo Ⓒⓘⓡⓒ</option>
+      <option value="cuadrado">Cuadrado 🅒🅤🅐</option>
+    </select>
+  </div>
+
+  <div class="sec">
+    <h3>Formato</h3>
+    <div class="row checks">
+      <label><input type="checkbox" id="f-l"> Negrita &amp;l</label>
+      <label><input type="checkbox" id="f-o"> Cursiva &amp;o</label>
+      <label><input type="checkbox" id="f-n"> Subrayado &amp;n</label>
+      <label><input type="checkbox" id="f-m"> Tachado &amp;m</label>
+      <label><input type="checkbox" id="f-k"> Ofuscado &amp;k</label>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <label>Salida:</label>
+      <select id="salida">
+        <option value="hex">&amp;#RRGGBB (plugins con hex)</option>
+        <option value="minimessage">MiniMessage &lt;color:#hex&gt;</option>
+        <option value="shorthand">MiniMessage corto &lt;#hex&gt;</option>
+        <option value="plano">Solo texto (sin color)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h3>Presets</h3>
+    <div class="row" id="presets"></div>
+  </div>
+</div>
+
+<!-- CUADRO GRANDE: la palabra -->
+<div class="big">
+  <div class="pv-big" id="previews"></div>
+  <div class="emojis row">
     <button class="btn emo" data-e="🔥">🔥</button>
     <button class="btn emo" data-e="💎">💎</button>
     <button class="btn emo" data-e="👑">👑</button>
@@ -76,85 +173,39 @@
     <button class="btn emo" data-e="✨">✨</button>
     <button class="btn emo" data-e="☠️">☠️</button>
   </div>
+  <textarea id="texto" rows="2">DEGRADADO</textarea>
+  <p class="aviso" style="margin:6px 0 0">Escribe varias líneas para generar un código por cada una.</p>
 </div>
 
-<h2>2. Estilo de letra y formato</h2>
-<div class="card">
-  <div class="row">
-    <label>Letra:</label>
-    <select id="estilo">
-      <option value="normal">Normal</option>
-      <option value="mini">Mini Caps ᴍɪɴɪ</option>
-      <option value="negrita">Negrita 𝐁𝐨𝐥𝐝</option>
-      <option value="cursiva">Cursiva 𝘐𝘵𝘢𝘭𝘪𝘤</option>
-      <option value="negritacursiva">Negrita cursiva 𝑩𝒐𝒍𝒅</option>
-      <option value="gotica">Gótica 𝔊𝔬𝔱𝔦𝔠</option>
-      <option value="monoespacio">Monoespacio 𝙼𝚘𝚗𝚘</option>
-      <option value="circulo">Círculo Ⓒⓘⓡⓒ</option>
-      <option value="cuadrado">Cuadrado 🅒🅤🅐</option>
-    </select>
-  </div>
-  <div class="row checks">
-    <label><input type="checkbox" id="f-l"> Negrita &amp;l</label>
-    <label><input type="checkbox" id="f-o"> Cursiva &amp;o</label>
-    <label><input type="checkbox" id="f-n"> Subrayado &amp;n</label>
-    <label><input type="checkbox" id="f-m"> Tachado &amp;m</label>
-    <label><input type="checkbox" id="f-k"> Ofuscado &amp;k</label>
+<!-- DEBAJO: cuadrito de colores + rectángulo de código -->
+<div class="fila2">
+  <div class="sq" id="chips"></div>
+  <div class="rect">
+    <h3>Código para copiar</h3>
+    <div id="salidas"></div>
+    <div class="aviso">Pégalo en el plugin, por ejemplo:<br>/hologram edit Coinshop setline 1 &lt;código&gt;</div>
   </div>
 </div>
 
-<h2>3. Colores</h2>
-<div class="card">
-  <div class="row">
-    <label>Modo:</label>
-    <select id="modo">
-      <option value="degradado">Degradado</option>
-      <option value="arcoiris">Arcoíris automático</option>
-    </select>
+<!-- FAVORITOS -->
+<div class="panel">
+  <div class="row" style="justify-content:space-between; margin-bottom:10px">
+    <h3 style="margin:0">Favoritos</h3>
+    <button class="btn principal" id="guardarFav">⭐ Guardar favorito</button>
   </div>
-  <div class="row" id="stops"></div>
-  <div class="row">
-    <button class="btn" id="agregar">+ Color</button>
-    <button class="btn" id="quitar">− Color</button>
-    <button class="btn" id="invertir">⇄ Invertir colores</button>
-  </div>
-  <label>Presets:</label>
-  <div class="presets" id="presets" style="margin-top:6px"></div>
+  <div class="favgrid" id="favs"></div>
 </div>
 
-<h2>4. Vista previa</h2>
-<div class="preview-zona" id="previews"></div>
-
-<h2>5. Formato de salida</h2>
-<div class="card">
-  <div class="row">
-    <label>Formato:</label>
-    <select id="salida">
-      <option value="hex">&amp;#RRGGBB (plugins con hex)</option>
-      <option value="minimessage">MiniMessage &lt;color:#hex&gt;</option>
-      <option value="shorthand">MiniMessage corto &lt;#hex&gt;</option>
-      <option value="plano">Solo texto (sin código de color)</option>
-    </select>
-  </div>
-  <div id="salidas"></div>
-  <div class="row" style="margin-top:8px">
-    <button class="btn principal" id="copiarTodo">Copiar todo</button>
-    <button class="btn" id="guardarFav">⭐ Guardar favorito</button>
-  </div>
-</div>
-
-<h2>6. Favoritos</h2>
-<div class="card" id="favs"></div>
-
-<h2>7. Convertidor inverso</h2>
-<div class="card">
+<!-- CONVERTIDOR INVERSO -->
+<div class="panel">
+  <h3>Convertidor inverso</h3>
   <label>Pega aquí un código &amp;#RRGGBB para verlo y editarlo:</label>
-  <textarea id="conv" rows="3" placeholder="&#FF4ECD&lH&#EE55D9&lo&#..."></textarea>
+  <textarea id="conv" rows="2" placeholder="&#FF4ECD&lH&#EE55D9&lo..." style="margin-top:6px"></textarea>
   <div class="row" style="margin-top:8px">
     <button class="btn" id="ver">Ver vista previa</button>
     <button class="btn" id="pasar">Pasar al editor</button>
   </div>
-  <div class="preview-zona" id="convPrev"></div>
+  <div class="pv-big" id="convPrev" style="font-size:30px; min-height:50px; margin-top:10px"></div>
 </div>
 
 <script>
@@ -221,7 +272,7 @@ const FMT_MM = { l:'bold', o:'italic', n:'underlined', m:'strikethrough', k:'obf
 let stops = ['#ff4ecd', '#8b5cf6', '#22d3ee'];
 let codigos = [];
 
-/* ---------- Construcción de caracteres con color y formato ---------- */
+/* ---------- Construcción de caracteres ---------- */
 function construirItems(linea, cfg) {
   const chars = separar(linea);
   const estiloFn = ESTILOS[cfg.estilo] || ESTILOS.normal;
@@ -241,7 +292,7 @@ function construirItems(linea, cfg) {
   return items;
 }
 
-/* ---------- Codificación según el formato de salida ---------- */
+/* ---------- Codificación ---------- */
 function agrupar(items) {
   const runs = [];
   for (const it of items) {
@@ -262,9 +313,7 @@ function encode(items, salida) {
     const texto = r.text.replace(/</g, '\\<');
     const open = activos.map(k => `<${FMT_MM[k]}>`).join('');
     const close = activos.slice().reverse().map(k => `</${FMT_MM[k]}>`).join('');
-    if (salida === 'shorthand') {
-      return `<${r.color}>${open}${texto}${close}`;
-    }
+    if (salida === 'shorthand') return `<${r.color}>${open}${texto}${close}`;
     return `<color:${r.color}>${open}${texto}${close}</color>`;
   }).join('');
 }
@@ -290,7 +339,7 @@ setInterval(() => {
   });
 }, 120);
 
-/* ---------- Lectura de configuración ---------- */
+/* ---------- Configuración ---------- */
 function setFmt(fmt) {
   $('f-l').checked = !!fmt.l; $('f-o').checked = !!fmt.o; $('f-n').checked = !!fmt.n;
   $('f-m').checked = !!fmt.m; $('f-k').checked = !!fmt.k;
@@ -313,20 +362,28 @@ function render() {
   codigos = [];
   let pv = '', sv = '';
   if (!lineas.length) {
-    $('previews').innerHTML = '<div class="vacio">Escribe algo arriba.</div>';
+    $('previews').innerHTML = '<div class="vacio">Escribe algo abajo.</div>';
     $('salidas').innerHTML = '';
-    return;
+  } else {
+    lineas.forEach((l, i) => {
+      const items = construirItems(l, cfg);
+      const code = encode(items, cfg.salida);
+      codigos.push(code);
+      pv += `<div class="linea">${htmlPreview(items)}</div>`;
+      sv += `<div class="fila" style="margin-bottom:8px"><div class="codigo">${escapeHtml(code)}</div>` +
+            `<button class="btn" onclick="copiarLinea(${i}, this)">Copiar</button></div>`;
+    });
+    $('previews').innerHTML = pv;
+    $('salidas').innerHTML = sv;
   }
-  lineas.forEach((l, i) => {
-    const items = construirItems(l, cfg);
-    const code = encode(items, cfg.salida);
-    codigos.push(code);
-    pv += `<div class="pv">${htmlPreview(items)}</div>`;
-    sv += `<div class="fila"><pre>${escapeHtml(code)}</pre>` +
-          `<button class="btn" onclick="copiarLinea(${i}, this)">Copiar</button></div>`;
-  });
-  $('previews').innerHTML = pv;
-  $('salidas').innerHTML = sv;
+  renderChips();
+}
+
+/* ---------- Cuadrito de colores ---------- */
+function renderChips() {
+  $('chips').innerHTML = '<h3>Colores</h3>' + stops.map(c =>
+    `<div class="chip"><span class="c" style="background:${c}"></span>${c.toUpperCase()}</div>`
+  ).join('');
 }
 
 /* ---------- Copiar ---------- */
@@ -347,7 +404,7 @@ function copiarTexto(t, btn) {
 }
 function copiarLinea(i, btn) { copiarTexto(codigos[i], btn); }
 
-/* ---------- Colores (stops) ---------- */
+/* ---------- Colores (pickers) ---------- */
 function renderStops() {
   $('stops').innerHTML = stops.map((c, i) =>
     `<input type="color" value="${c}" data-i="${i}">`).join('');
@@ -400,26 +457,25 @@ function renderFavs() {
   const f = cargarFavs();
   const cont = $('favs');
   cont.innerHTML = '';
-  if (!f.length) { cont.innerHTML = '<div class="vacio">Aún no tienes favoritos.</div>'; return; }
+  if (!f.length) { cont.innerHTML = '<div class="vacio" style="grid-column:1/-1">Aún no tienes favoritos.</div>'; return; }
   f.forEach((fav, i) => {
-    const row = document.createElement('div');
-    row.className = 'fila';
-    const b = document.createElement('button');
-    b.className = 'btn';
-    b.textContent = fav.nombre;
-    b.onclick = () => cargarFav(fav);
-    const x = document.createElement('button');
-    x.className = 'btn borrar';
+    const t = document.createElement('div');
+    t.className = 'tile';
+    t.title = fav.texto;
+    t.textContent = fav.nombre;
+    t.onclick = () => cargarFav(fav);
+    const x = document.createElement('span');
+    x.className = 'x';
     x.textContent = '×';
-    x.onclick = () => { f.splice(i, 1); guardarFavs(f); renderFavs(); };
-    row.append(b, x);
-    cont.appendChild(row);
+    x.onclick = e => { e.stopPropagation(); f.splice(i, 1); guardarFavs(f); renderFavs(); };
+    t.appendChild(x);
+    cont.appendChild(t);
   });
 }
 function guardarFav() {
   const cfg = leerCfg();
   const f = cargarFavs();
-  const nombre = (cfg.texto.replace(/\n/g, ' ').slice(0, 24)) || 'Favorito';
+  const nombre = cfg.texto.replace(/\n/g, ' ').slice(0, 24) || 'Favorito';
   f.unshift({ nombre, ...cfg });
   guardarFavs(f.slice(0, 30));
   renderFavs();
@@ -433,6 +489,7 @@ function cargarFav(fav) {
   setFmt(fav.fmt);
   renderStops();
   render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /* ---------- Convertidor inverso ---------- */
@@ -459,7 +516,7 @@ function parsearCodigo(src) {
 function verConvertidor() {
   const items = parsearCodigo($('conv').value.trim());
   $('convPrev').innerHTML = items.length
-    ? `<div class="pv">${htmlPreview(items)}</div>`
+    ? htmlPreview(items)
     : '<div class="vacio">Pega un código para verlo.</div>';
 }
 function pasarAlEditor() {
@@ -490,7 +547,6 @@ $('quitar').onclick = () => {
   if (stops.length > 2) { stops.pop(); renderStops(); render(); }
 };
 $('invertir').onclick = () => { stops.reverse(); renderStops(); render(); };
-$('copiarTodo').onclick = e => copiarTexto(codigos.join('\n'), e.target);
 $('guardarFav').onclick = guardarFav;
 $('ver').onclick = verConvertidor;
 $('pasar').onclick = pasarAlEditor;
