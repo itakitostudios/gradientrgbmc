@@ -3,198 +3,507 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Generador de degradados &#RRGGBB</title>
+<title>Generador de degradados para Minecraft</title>
 <style>
+  * { box-sizing: border-box; }
   body {
     font-family: system-ui, sans-serif;
-    background: #111;
-    color: #eee;
-    max-width: 760px;
-    margin: 40px auto;
-    padding: 0 20px;
+    background: #111; color: #eee;
+    max-width: 820px; margin: 30px auto; padding: 0 16px;
   }
-  h1 { font-size: 22px; }
-  .row { display: flex; gap: 12px; align-items: center; margin: 12px 0; flex-wrap: wrap; }
-  input[type=text], select {
-    flex: 1; padding: 10px; border-radius: 8px;
-    border: 1px solid #333; background: #1c1c1c; color: #eee; font-size: 16px;
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  h2 { font-size: 16px; color: #c4b5fd; margin: 26px 0 8px; border-bottom: 1px solid #272727; padding-bottom: 6px; }
+  .card { background: #181818; border: 1px solid #2a2a2a; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+  label { font-size: 13px; color: #aaa; }
+  textarea, select, input[type=text] {
+    width: 100%; padding: 10px; border-radius: 8px;
+    border: 1px solid #333; background: #1c1c1c; color: #eee; font-size: 16px; font-family: inherit;
   }
-  select { flex: 0 0 auto; }
-  input[type=color] { width: 60px; height: 40px; border: none; background: none; cursor: pointer; }
-  .emojis button {
-    margin: 0; padding: 6px 10px; font-size: 20px;
-    background: #1c1c1c; border: 1px solid #333;
+  textarea { resize: vertical; min-height: 60px; }
+  select { width: auto; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 8px 0; }
+  input[type=color] { width: 52px; height: 40px; border: none; background: none; cursor: pointer; padding: 0; }
+  .btn {
+    padding: 8px 14px; border: 1px solid #333; border-radius: 8px;
+    background: #222; color: #eee; font-size: 14px; cursor: pointer;
   }
-  .emojis button:hover { background: #2a2a2a; }
-  .preview {
-    background: #000; border-radius: 10px; padding: 30px;
-    text-align: center; font-size: 40px; font-family: 'Courier New', monospace;
-    margin: 20px 0; white-space: pre-wrap; word-break: break-all; min-height: 60px;
+  .btn:hover { background: #2c2c2c; }
+  .btn.principal { background: #7c3aed; border-color: #7c3aed; font-weight: bold; }
+  .btn.principal:hover { background: #6d28d9; }
+  .btn.emo { font-size: 20px; padding: 4px 9px; }
+  .btn.borrar { color: #f87171; }
+  .preview-zona {
+    background: rgba(0,0,0,.55); border-radius: 10px; padding: 14px 18px;
+    margin: 8px 0; min-height: 60px;
   }
-  .output {
-    background: #1c1c1c; border: 1px solid #333; border-radius: 8px;
-    padding: 12px; font-family: monospace; font-size: 14px;
-    word-break: break-all; white-space: pre-wrap;
+  .pv {
+    font-family: 'Courier New', monospace; font-size: 26px; font-weight: bold;
+    text-shadow: 2px 2px 0 rgba(0,0,0,.6); word-break: break-word; white-space: pre-wrap;
+    line-height: 1.5; padding: 4px 0;
   }
-  button.copiar {
-    margin-top: 10px; padding: 10px 18px; border: none; border-radius: 8px;
-    background: #7c3aed; color: white; font-weight: bold; cursor: pointer;
+  .fila { display: flex; gap: 8px; align-items: flex-start; margin: 6px 0; }
+  pre {
+    flex: 1; background: #1c1c1c; border: 1px solid #333; border-radius: 8px;
+    padding: 10px; margin: 0; white-space: pre-wrap; word-break: break-all;
+    font-size: 13px; color: #d4d4d8;
   }
-  button.copiar:hover { background: #6d28d9; }
-  label { font-size: 14px; color: #aaa; }
-  .aviso { font-size: 13px; color: #888; margin-top: 16px; }
+  .checks label { color: #ddd; display: inline-flex; gap: 5px; align-items: center; font-size: 14px; }
+  .presets { display: flex; flex-wrap: wrap; gap: 6px; }
+  .aviso { font-size: 12px; color: #777; margin-top: 8px; }
+  .vacio { color: #666; font-size: 14px; }
 </style>
 </head>
 <body>
 
-<h1>Generador de degradados (&#RRGGBB)</h1>
+<h1>Generador de degradados para Minecraft</h1>
+<p class="aviso" style="margin-top:0">Escribe varias líneas para crear un código por cada una.</p>
 
-<div class="row">
-  <label>Texto:</label>
-  <input type="text" id="texto" value="POINTSHOP">
+<h2>1. Texto</h2>
+<div class="card">
+  <textarea id="texto" rows="2">DEGRADADO</textarea>
+  <div class="row" style="margin-top:10px">
+    <label>Emojis:</label>
+    <button class="btn emo" data-e="🔥">🔥</button>
+    <button class="btn emo" data-e="💎">💎</button>
+    <button class="btn emo" data-e="👑">👑</button>
+    <button class="btn emo" data-e="⭐">⭐</button>
+    <button class="btn emo" data-e="⚡">⚡</button>
+    <button class="btn emo" data-e="🏆">🏆</button>
+    <button class="btn emo" data-e="❤️">❤️</button>
+    <button class="btn emo" data-e="🎮">🎮</button>
+    <button class="btn emo" data-e="💰">💰</button>
+    <button class="btn emo" data-e="🛡️">🛡️</button>
+    <button class="btn emo" data-e="✨">✨</button>
+    <button class="btn emo" data-e="☠️">☠️</button>
+  </div>
 </div>
 
-<div class="row emojis">
-  <label>Emojis:</label>
-  <button type="button" data-e="🔥">🔥</button>
-  <button type="button" data-e="💎">💎</button>
-  <button type="button" data-e="👑">👑</button>
-  <button type="button" data-e="⭐">⭐</button>
-  <button type="button" data-e="⚡">⚡</button>
-  <button type="button" data-e="🏆">🏆</button>
-  <button type="button" data-e="❤️">❤️</button>
-  <button type="button" data-e="🎮">🎮</button>
-  <button type="button" data-e="💰">💰</button>
-  <button type="button" data-e="🛡️">🛡️</button>
+<h2>2. Estilo de letra y formato</h2>
+<div class="card">
+  <div class="row">
+    <label>Letra:</label>
+    <select id="estilo">
+      <option value="normal">Normal</option>
+      <option value="mini">Mini Caps ᴍɪɴɪ</option>
+      <option value="negrita">Negrita 𝐁𝐨𝐥𝐝</option>
+      <option value="cursiva">Cursiva 𝘐𝘵𝘢𝘭𝘪𝘤</option>
+      <option value="negritacursiva">Negrita cursiva 𝑩𝒐𝒍𝒅</option>
+      <option value="gotica">Gótica 𝔊𝔬𝔱𝔦𝔠</option>
+      <option value="monoespacio">Monoespacio 𝙼𝚘𝚗𝚘</option>
+      <option value="circulo">Círculo Ⓒⓘⓡⓒ</option>
+      <option value="cuadrado">Cuadrado 🅒🅤🅐</option>
+    </select>
+  </div>
+  <div class="row checks">
+    <label><input type="checkbox" id="f-l"> Negrita &amp;l</label>
+    <label><input type="checkbox" id="f-o"> Cursiva &amp;o</label>
+    <label><input type="checkbox" id="f-n"> Subrayado &amp;n</label>
+    <label><input type="checkbox" id="f-m"> Tachado &amp;m</label>
+    <label><input type="checkbox" id="f-k"> Ofuscado &amp;k</label>
+  </div>
 </div>
 
-<div class="row">
-  <label>Estilo:</label>
-  <select id="estilo">
-    <option value="normal">Normal</option>
-    <option value="mini">Mini Caps (ᴍɪɴɪ)</option>
-    <option value="negrita">Negrita (𝐁𝐨𝐥𝐝)</option>
-    <option value="cursiva">Cursiva (𝘐𝘵𝘢𝘭𝘪𝘤)</option>
-  </select>
+<h2>3. Colores</h2>
+<div class="card">
+  <div class="row">
+    <label>Modo:</label>
+    <select id="modo">
+      <option value="degradado">Degradado</option>
+      <option value="arcoiris">Arcoíris automático</option>
+    </select>
+  </div>
+  <div class="row" id="stops"></div>
+  <div class="row">
+    <button class="btn" id="agregar">+ Color</button>
+    <button class="btn" id="quitar">− Color</button>
+    <button class="btn" id="invertir">⇄ Invertir colores</button>
+  </div>
+  <label>Presets:</label>
+  <div class="presets" id="presets" style="margin-top:6px"></div>
 </div>
 
-<div class="row">
-  <label>Color 1:</label>
-  <input type="color" id="c1" value="#c084fc">
-  <label>Color 2:</label>
-  <input type="color" id="c2" value="#818cf8">
-  <label><input type="checkbox" id="negrita" checked> Negrita del plugin (&amp;l)</label>
+<h2>4. Vista previa</h2>
+<div class="preview-zona" id="previews"></div>
+
+<h2>5. Formato de salida</h2>
+<div class="card">
+  <div class="row">
+    <label>Formato:</label>
+    <select id="salida">
+      <option value="hex">&amp;#RRGGBB (plugins con hex)</option>
+      <option value="minimessage">MiniMessage &lt;color:#hex&gt;</option>
+      <option value="shorthand">MiniMessage corto &lt;#hex&gt;</option>
+      <option value="plano">Solo texto (sin código de color)</option>
+    </select>
+  </div>
+  <div id="salidas"></div>
+  <div class="row" style="margin-top:8px">
+    <button class="btn principal" id="copiarTodo">Copiar todo</button>
+    <button class="btn" id="guardarFav">⭐ Guardar favorito</button>
+  </div>
 </div>
 
-<div class="preview" id="preview"></div>
+<h2>6. Favoritos</h2>
+<div class="card" id="favs"></div>
 
-<label>Código para pegar en el plugin:</label>
-<div class="output" id="codigo"></div>
-<button class="copiar" onclick="copiar()">Copiar código</button>
-
-<p class="aviso">
-  Los emojis salen con el degradado, pero en Minecraft la mayoría no se ve a color
-  ni se muestra si el servidor no tiene un resource pack que los soporte.
-  Las letras Mini Caps y Negrita/Cursiva son caracteres Unicode, así que el servidor
-  debe poder mostrarlos.
-</p>
+<h2>7. Convertidor inverso</h2>
+<div class="card">
+  <label>Pega aquí un código &amp;#RRGGBB para verlo y editarlo:</label>
+  <textarea id="conv" rows="3" placeholder="&#FF4ECD&lH&#EE55D9&lo&#..."></textarea>
+  <div class="row" style="margin-top:8px">
+    <button class="btn" id="ver">Ver vista previa</button>
+    <button class="btn" id="pasar">Pasar al editor</button>
+  </div>
+  <div class="preview-zona" id="convPrev"></div>
+</div>
 
 <script>
-  const $ = id => document.getElementById(id);
+const $ = id => document.getElementById(id);
 
-  const hex2 = n => Math.round(n).toString(16).padStart(2, '0').toUpperCase();
-  const rgb = h => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16));
-
-  const MINI = {
-    a:'ᴀ', b:'ʙ', c:'ᴄ', d:'ᴅ', e:'ᴇ', f:'ꜰ', g:'ɢ', h:'ʜ', i:'ɪ', j:'ᴊ',
-    k:'ᴋ', l:'ʟ', m:'ᴍ', n:'ɴ', o:'ᴏ', p:'ᴘ', q:'ǫ', r:'ʀ', s:'ꜱ', t:'ᴛ',
-    u:'ᴜ', v:'ᴠ', w:'ᴡ', x:'x', y:'ʏ', z:'ᴢ'
+/* ---------- Utilidades ---------- */
+const hex2 = n => Math.round(Math.max(0, Math.min(255, n))).toString(16).padStart(2, '0').toUpperCase();
+const hexToRgb = h => { h = h.replace('#', ''); return [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)); };
+function hslToRgb(h, s, l) {
+  s /= 100; l /= 100;
+  const a = s * Math.min(l, 1 - l);
+  const f = n => {
+    const k = (n + h / 30) % 12;
+    return (l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))) * 255;
   };
-
-  function aplicarEstilo(ch, estilo) {
-    if (estilo === 'mini') {
-      const low = ch.toLowerCase();
-      return MINI[low] || ch;
-    }
-    if (estilo === 'negrita') {
-      const c = ch.codePointAt(0);
-      if (c >= 65 && c <= 90)  return String.fromCodePoint(0x1D400 + (c - 65));
-      if (c >= 97 && c <= 122) return String.fromCodePoint(0x1D41A + (c - 97));
-      if (c >= 48 && c <= 57)  return String.fromCodePoint(0x1D7CE + (c - 48));
-      return ch;
-    }
-    if (estilo === 'cursiva') {
-      const c = ch.codePointAt(0);
-      if (ch === 'h') return 'ℎ';
-      if (c >= 65 && c <= 90)  return String.fromCodePoint(0x1D434 + (c - 65));
-      if (c >= 97 && c <= 122) return String.fromCodePoint(0x1D44E + (c - 97));
-      return ch;
-    }
-    return ch;
+  return [f(0), f(8), f(4)];
+}
+function colorAt(stops, t) {
+  if (stops.length === 1) return hexToRgb(stops[0]);
+  const pos = t * (stops.length - 1);
+  const i = Math.min(Math.floor(pos), stops.length - 2);
+  const f = pos - i;
+  const a = hexToRgb(stops[i]), b = hexToRgb(stops[i + 1]);
+  return a.map((v, k) => v + (b[k] - v) * f);
+}
+function separar(texto) {
+  if (window.Intl && Intl.Segmenter) {
+    const seg = new Intl.Segmenter('es', { granularity: 'grapheme' });
+    return [...seg.segment(texto)].map(s => s.segment);
   }
+  return [...texto];
+}
+const escapeHtml = s => s.replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 
-  // Separa en "caracteres visibles" (un emoji con variación o ZWJ cuenta como uno)
-  function separar(texto) {
-    if (window.Intl && Intl.Segmenter) {
-      const seg = new Intl.Segmenter('es', { granularity: 'grapheme' });
-      return [...seg.segment(texto)].map(s => s.segment);
+/* ---------- Estilos de letra ---------- */
+const MINI = {
+  a:'ᴀ', b:'ʙ', c:'ᴄ', d:'ᴅ', e:'ᴇ', f:'ꜰ', g:'ɢ', h:'ʜ', i:'ɪ', j:'ᴊ',
+  k:'ᴋ', l:'ʟ', m:'ᴍ', n:'ɴ', o:'ᴏ', p:'ᴘ', q:'ǫ', r:'ʀ', s:'ꜱ', t:'ᴛ',
+  u:'ᴜ', v:'ᴠ', w:'ᴡ', x:'x', y:'ʏ', z:'ᴢ'
+};
+function mapear(c, up, low, dig, ext) {
+  if (ext && ext[c]) return ext[c];
+  const code = c.charCodeAt(0);
+  if (c.length === 1 && code >= 65 && code <= 90 && up) return String.fromCodePoint(up + code - 65);
+  if (c.length === 1 && code >= 97 && code <= 122 && low) return String.fromCodePoint(low + code - 97);
+  if (c.length === 1 && code >= 48 && code <= 57 && dig) return String.fromCodePoint(dig + code - 48);
+  return c;
+}
+const ESTILOS = {
+  normal: c => c,
+  mini: c => MINI[c.toLowerCase()] || c,
+  negrita: c => mapear(c, 0x1D400, 0x1D41A, 0x1D7CE),
+  cursiva: c => mapear(c, 0x1D434, 0x1D44E, null, { h: 'ℎ' }),
+  negritacursiva: c => mapear(c, 0x1D468, 0x1D482, null),
+  gotica: c => mapear(c, 0x1D504, 0x1D51E, null, { C:'ℭ', H:'ℌ', I:'ℑ', R:'ℜ', Z:'ℨ' }),
+  monoespacio: c => mapear(c, 0x1D670, 0x1D68A, 0x1D7F6),
+  circulo: c => mapear(c, 0x24B6, 0x24D0, null),
+  cuadrado: c => mapear(c.toUpperCase(), 0x1F130, 0, null)
+};
+
+/* ---------- Estado ---------- */
+const FK = ['l', 'o', 'n', 'm', 'k'];
+const FMT_MM = { l:'bold', o:'italic', n:'underlined', m:'strikethrough', k:'obfuscated' };
+let stops = ['#ff4ecd', '#8b5cf6', '#22d3ee'];
+let codigos = [];
+
+/* ---------- Construcción de caracteres con color y formato ---------- */
+function construirItems(linea, cfg) {
+  const chars = separar(linea);
+  const estiloFn = ESTILOS[cfg.estilo] || ESTILOS.normal;
+  const cuentan = chars.filter(c => c !== ' ').length;
+  const items = [];
+  let idx = 0;
+  for (const raw of chars) {
+    const t = cuentan <= 1 ? 0 : idx / (cuentan - 1);
+    const rgbv = cfg.modo === 'arcoiris'
+      ? hslToRgb((idx / Math.max(cuentan, 1)) * 360, 100, 65)
+      : colorAt(cfg.stops, t);
+    const color = '#' + rgbv.map(hex2).join('');
+    const ch = raw === ' ' ? ' ' : estiloFn(raw);
+    items.push({ ch, color, fmt: { ...cfg.fmt } });
+    if (raw !== ' ') idx++;
+  }
+  return items;
+}
+
+/* ---------- Codificación según el formato de salida ---------- */
+function agrupar(items) {
+  const runs = [];
+  for (const it of items) {
+    const key = it.color + '|' + FK.map(k => (it.fmt[k] ? 1 : 0)).join('');
+    const last = runs[runs.length - 1];
+    if (last && last.key === key) last.text += it.ch;
+    else runs.push({ key, color: it.color, fmt: { ...it.fmt }, text: it.ch });
+  }
+  return runs;
+}
+function encode(items, salida) {
+  if (salida === 'plano') return items.map(i => i.ch).join('');
+  return agrupar(items).map(r => {
+    const activos = FK.filter(k => r.fmt[k]);
+    if (salida === 'hex') {
+      return '&#' + r.color.slice(1) + activos.map(k => '&' + k).join('') + r.text;
     }
-    return [...texto];
-  }
-
-  function generar() {
-    const texto = $('texto').value || 'TEXTO';
-    const estilo = $('estilo').value;
-    const [r1, g1, b1] = rgb($('c1').value);
-    const [r2, g2, b2] = rgb($('c2').value);
-    const negrita = $('negrita').checked;
-
-    const chars = separar(texto);
-    const total = chars.filter(c => c !== ' ').length;
-    let idx = 0;
-    let codigo = '';
-    let html = '';
-
-    for (const ch of chars) {
-      if (ch === ' ') {
-        codigo += ' ';
-        html += ' ';
-        continue;
-      }
-      const t = total <= 1 ? 0 : idx / (total - 1);
-      const r = r1 + (r2 - r1) * t;
-      const g = g1 + (g2 - g1) * t;
-      const b = b1 + (b2 - b1) * t;
-      const hex = hex2(r) + hex2(g) + hex2(b);
-
-      const visible = aplicarEstilo(ch, estilo);
-
-      codigo += '&#' + hex + (negrita ? '&l' : '') + visible;
-      html += `<span style="color:#${hex};font-weight:${negrita ? 900 : 400}">${visible}</span>`;
-      idx++;
+    const texto = r.text.replace(/</g, '\\<');
+    const open = activos.map(k => `<${FMT_MM[k]}>`).join('');
+    const close = activos.slice().reverse().map(k => `</${FMT_MM[k]}>`).join('');
+    if (salida === 'shorthand') {
+      return `<${r.color}>${open}${texto}${close}`;
     }
+    return `<color:${r.color}>${open}${texto}${close}</color>`;
+  }).join('');
+}
 
-    $('preview').innerHTML = html;
-    $('codigo').textContent = codigo;
-  }
-
-  function copiar() {
-    navigator.clipboard.writeText($('codigo').textContent);
-  }
-
-  document.querySelectorAll('.emojis button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      $('texto').value += btn.dataset.e;
-      generar();
-    });
+/* ---------- Vista previa ---------- */
+function htmlPreview(items) {
+  return items.map(it => {
+    const st = [`color:${it.color}`];
+    if (it.fmt.l) st.push('font-weight:900');
+    if (it.fmt.o) st.push('font-style:italic');
+    const deco = [];
+    if (it.fmt.n) deco.push('underline');
+    if (it.fmt.m) deco.push('line-through');
+    if (deco.length) st.push('text-decoration:' + deco.join(' '));
+    const obf = it.fmt.k && it.ch.trim() ? ' class="obf"' : '';
+    return `<span${obf} style="${st.join(';')}">${escapeHtml(it.ch)}</span>`;
+  }).join('');
+}
+const POOL = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$%&*';
+setInterval(() => {
+  document.querySelectorAll('.obf').forEach(s => {
+    s.textContent = POOL[Math.floor(Math.random() * POOL.length)];
   });
+}, 120);
 
-  ['texto', 'estilo', 'c1', 'c2', 'negrita'].forEach(id => {
-    $(id).addEventListener('input', generar);
-    $(id).addEventListener('change', generar);
+/* ---------- Lectura de configuración ---------- */
+function setFmt(fmt) {
+  $('f-l').checked = !!fmt.l; $('f-o').checked = !!fmt.o; $('f-n').checked = !!fmt.n;
+  $('f-m').checked = !!fmt.m; $('f-k').checked = !!fmt.k;
+}
+function leerCfg() {
+  return {
+    texto: $('texto').value,
+    stops: stops.slice(),
+    modo: $('modo').value,
+    estilo: $('estilo').value,
+    salida: $('salida').value,
+    fmt: { l: $('f-l').checked, o: $('f-o').checked, n: $('f-n').checked, m: $('f-m').checked, k: $('f-k').checked }
+  };
+}
+
+/* ---------- Render principal ---------- */
+function render() {
+  const cfg = leerCfg();
+  const lineas = cfg.texto.split('\n').map(l => l.trim()).filter(l => l.length);
+  codigos = [];
+  let pv = '', sv = '';
+  if (!lineas.length) {
+    $('previews').innerHTML = '<div class="vacio">Escribe algo arriba.</div>';
+    $('salidas').innerHTML = '';
+    return;
+  }
+  lineas.forEach((l, i) => {
+    const items = construirItems(l, cfg);
+    const code = encode(items, cfg.salida);
+    codigos.push(code);
+    pv += `<div class="pv">${htmlPreview(items)}</div>`;
+    sv += `<div class="fila"><pre>${escapeHtml(code)}</pre>` +
+          `<button class="btn" onclick="copiarLinea(${i}, this)">Copiar</button></div>`;
   });
+  $('previews').innerHTML = pv;
+  $('salidas').innerHTML = sv;
+}
 
-  generar();
+/* ---------- Copiar ---------- */
+function copiarTexto(t, btn) {
+  const ok = () => {
+    if (!btn) return;
+    const o = btn.textContent;
+    btn.textContent = '¡Copiado!';
+    setTimeout(() => btn.textContent = o, 1200);
+  };
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(t).then(ok).catch(() => alert('No se pudo copiar. Selecciona el texto y cópialo a mano.'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = t; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); ta.remove(); ok();
+  }
+}
+function copiarLinea(i, btn) { copiarTexto(codigos[i], btn); }
+
+/* ---------- Colores (stops) ---------- */
+function renderStops() {
+  $('stops').innerHTML = stops.map((c, i) =>
+    `<input type="color" value="${c}" data-i="${i}">`).join('');
+  $('stops').querySelectorAll('input').forEach(inp =>
+    inp.addEventListener('input', e => {
+      stops[+e.target.dataset.i] = e.target.value;
+      render();
+    }));
+}
+
+/* ---------- Presets ---------- */
+const PRESETS = [
+  { n: 'Morado', c: ['#c084fc', '#818cf8', '#22d3ee'] },
+  { n: 'Fuego', c: ['#ff4500', '#ff8c00', '#ffd700'] },
+  { n: 'Hielo', c: ['#e0f7ff', '#5ee7ff', '#1e90ff'] },
+  { n: 'Oro', c: ['#fff3b0', '#ffd700', '#b8860b'] },
+  { n: 'Neón', c: ['#ff00ff', '#00ffff'] },
+  { n: 'Océano', c: ['#00c6ff', '#0072ff', '#7b2ff7'] },
+  { n: 'Esmeralda', c: ['#11998e', '#38ef7d'] },
+  { n: 'Atardecer', c: ['#f83600', '#f9d423'] },
+  { n: 'Rosa', c: ['#ff9a9e', '#fad0c4'] },
+  { n: 'Sangre', c: ['#8b0000', '#ff1744', '#ff8a80'] },
+  { n: 'Arcoíris', arco: true }
+];
+function renderPresets() {
+  const cont = $('presets');
+  cont.innerHTML = '';
+  PRESETS.forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'btn';
+    b.textContent = p.n;
+    b.onclick = () => {
+      if (p.arco) { $('modo').value = 'arcoiris'; }
+      else { $('modo').value = 'degradado'; stops = p.c.slice(); renderStops(); }
+      render();
+    };
+    cont.appendChild(b);
+  });
+}
+
+/* ---------- Favoritos ---------- */
+function cargarFavs() {
+  try { return JSON.parse(localStorage.getItem('degradados_favs')) || []; }
+  catch (e) { return []; }
+}
+function guardarFavs(f) {
+  try { localStorage.setItem('degradados_favs', JSON.stringify(f)); } catch (e) {}
+}
+function renderFavs() {
+  const f = cargarFavs();
+  const cont = $('favs');
+  cont.innerHTML = '';
+  if (!f.length) { cont.innerHTML = '<div class="vacio">Aún no tienes favoritos.</div>'; return; }
+  f.forEach((fav, i) => {
+    const row = document.createElement('div');
+    row.className = 'fila';
+    const b = document.createElement('button');
+    b.className = 'btn';
+    b.textContent = fav.nombre;
+    b.onclick = () => cargarFav(fav);
+    const x = document.createElement('button');
+    x.className = 'btn borrar';
+    x.textContent = '×';
+    x.onclick = () => { f.splice(i, 1); guardarFavs(f); renderFavs(); };
+    row.append(b, x);
+    cont.appendChild(row);
+  });
+}
+function guardarFav() {
+  const cfg = leerCfg();
+  const f = cargarFavs();
+  const nombre = (cfg.texto.replace(/\n/g, ' ').slice(0, 24)) || 'Favorito';
+  f.unshift({ nombre, ...cfg });
+  guardarFavs(f.slice(0, 30));
+  renderFavs();
+}
+function cargarFav(fav) {
+  $('texto').value = fav.texto;
+  stops = fav.stops.slice();
+  $('modo').value = fav.modo;
+  $('estilo').value = fav.estilo;
+  $('salida').value = fav.salida;
+  setFmt(fav.fmt);
+  renderStops();
+  render();
+}
+
+/* ---------- Convertidor inverso ---------- */
+function parsearCodigo(src) {
+  const vacio = () => ({ l: false, o: false, n: false, m: false, k: false });
+  const items = [];
+  let color = '#FFFFFF', fmt = vacio();
+  const re = /&#([0-9a-fA-F]{6})|&([lonmkrLONMKR])/g;
+  let last = 0, m;
+  const pushTxt = t => { for (const ch of separar(t)) items.push({ ch, color, fmt: { ...fmt } }); };
+  while ((m = re.exec(src))) {
+    pushTxt(src.slice(last, m.index));
+    if (m[1]) { color = '#' + m[1].toUpperCase(); fmt = vacio(); }
+    else {
+      const k = m[2].toLowerCase();
+      if (k === 'r') fmt = vacio();
+      else fmt[k] = true;
+    }
+    last = re.lastIndex;
+  }
+  pushTxt(src.slice(last));
+  return items;
+}
+function verConvertidor() {
+  const items = parsearCodigo($('conv').value.trim());
+  $('convPrev').innerHTML = items.length
+    ? `<div class="pv">${htmlPreview(items)}</div>`
+    : '<div class="vacio">Pega un código para verlo.</div>';
+}
+function pasarAlEditor() {
+  const items = parsearCodigo($('conv').value.trim());
+  if (!items.length) return;
+  $('texto').value = items.map(i => i.ch).join('');
+  const cols = [...new Set(items.filter(i => i.ch.trim()).map(i => i.color))];
+  stops = cols.length >= 2 ? cols.slice(0, 6) : [cols[0] || '#ffffff', cols[0] || '#ffffff'];
+  $('modo').value = 'degradado';
+  $('estilo').value = 'normal';
+  setFmt(items[0].fmt);
+  renderStops();
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ---------- Eventos ---------- */
+document.querySelectorAll('.btn.emo').forEach(b => {
+  b.addEventListener('click', () => {
+    $('texto').value += b.dataset.e;
+    render();
+  });
+});
+$('agregar').onclick = () => {
+  if (stops.length < 6) { stops.push(stops[stops.length - 1]); renderStops(); render(); }
+};
+$('quitar').onclick = () => {
+  if (stops.length > 2) { stops.pop(); renderStops(); render(); }
+};
+$('invertir').onclick = () => { stops.reverse(); renderStops(); render(); };
+$('copiarTodo').onclick = e => copiarTexto(codigos.join('\n'), e.target);
+$('guardarFav').onclick = guardarFav;
+$('ver').onclick = verConvertidor;
+$('pasar').onclick = pasarAlEditor;
+
+['texto', 'f-l', 'f-o', 'f-n', 'f-m', 'f-k'].forEach(id => $(id).addEventListener('input', render));
+['modo', 'estilo', 'salida'].forEach(id => $(id).addEventListener('change', render));
+
+/* ---------- Inicio ---------- */
+renderStops();
+renderPresets();
+renderFavs();
+$('f-l').checked = true;
+render();
 </script>
 
 </body>
