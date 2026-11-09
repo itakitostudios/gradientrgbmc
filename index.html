@@ -162,11 +162,17 @@
       <label>Frames:</label>
       <input type="number" id="animFrames" value="12" min="2" max="60">
       <label>Intervalo (seg):</label>
-      <input type="number" id="animInt" value="0.2" min="0.05" max="5" step="0.05">
+      <input type="number" id="animInt" value="0.5" min="0.05" max="5" step="0.05">
+      <label>Saltos por frame:</label>
+      <input type="number" id="animSalto" value="1" min="1" max="10" step="1">
       <label>Nombre:</label>
       <input type="text" id="animNombre" value="DEGRADADO">
     </div>
-    <p class="aviso" style="margin:6px 0 0">La animación siempre sale en &amp;#RRGGBB, que es lo que TAB soporta.</p>
+    <p class="aviso" id="ciclo" style="margin:6px 0 0"></p>
+    <p class="aviso" style="margin:4px 0 0">
+      Saltos por frame: 1 = movimiento suave. 2 o 3 = más rápido, con cada frame avanzando más.
+      La animación siempre sale en &amp;#RRGGBB, que es lo que TAB soporta.
+    </p>
   </div>
 </div>
 
@@ -387,7 +393,8 @@ function leerCfg() {
     fmt: { l: $('f-l').checked, o: $('f-o').checked, n: $('f-n').checked, m: $('f-m').checked, k: $('f-k').checked },
     anim: $('anim').checked,
     frames: Math.max(2, Math.min(60, parseInt($('animFrames').value) || 12)),
-    intervalo: parseFloat($('animInt').value) || 0.2,
+    intervalo: parseFloat($('animInt').value) || 0.5,
+    salto: Math.max(1, Math.min(10, parseInt($('animSalto').value) || 1)),
     nombre: $('animNombre').value.trim() || 'DEGRADADO'
   };
 }
@@ -404,6 +411,7 @@ function render() {
   if (!lineas.length) {
     $('salidas').innerHTML = '';
     $('previews').innerHTML = '<div class="vacio">Escribe algo abajo.</div>';
+    $('ciclo').textContent = '';
     renderChips();
     stopTimer();
     return;
@@ -411,11 +419,14 @@ function render() {
 
   if (cfg.anim) {
     $('tituloCodigo').textContent = 'Código para TAB (animations.yml)';
+    const cicloSeg = (cfg.frames / cfg.salto) * cfg.intervalo;
+    $('ciclo').textContent = `Un ciclo completo dura ≈ ${cicloSeg.toFixed(2)} s`;
     lineas.forEach((l, i) => {
       const frames = [];
       for (let k = 0; k < cfg.frames; k++) {
-        const items = construirItems(l, cfg, k / cfg.frames);
-        frames.push(items);
+        // Cada frame avanza "salto" pasos del ciclo completo
+        const off = (k * cfg.salto) / cfg.frames;
+        frames.push(construirItems(l, cfg, off));
       }
       lineasFrames.push(frames);
       const nombre = lineas.length > 1 ? `${cfg.nombre}_${i + 1}` : cfg.nombre;
@@ -433,6 +444,7 @@ function render() {
     frameActual = 0;
     startTimer(cfg.intervalo);
   } else {
+    $('ciclo').textContent = '';
     $('tituloCodigo').textContent = 'Código para copiar';
     $('avisoCodigo').innerHTML = 'Pégalo en el plugin, por ejemplo:<br>/hologram edit Coinshop setline 1 &lt;código&gt;';
     lineas.forEach((l, i) => {
@@ -591,6 +603,7 @@ function cargarFav(fav) {
   $('anim').checked = !!fav.anim;
   if (fav.frames) $('animFrames').value = fav.frames;
   if (fav.intervalo) $('animInt').value = fav.intervalo;
+  if (fav.salto) $('animSalto').value = fav.salto;
   if (fav.nombre) $('animNombre').value = fav.nombre;
   renderStops();
   render();
@@ -656,8 +669,7 @@ $('guardarFav').onclick = guardarFav;
 $('ver').onclick = verConvertidor;
 $('pasar').onclick = pasarAlEditor;
 
-['texto', 'f-l', 'f-o', 'f-n', 'f-m', 'f-k', 'animFrames', 'animNombre'].forEach(id => $(id).addEventListener('input', render));
-['animInt'].forEach(id => $(id).addEventListener('input', render));
+['texto', 'f-l', 'f-o', 'f-n', 'f-m', 'f-k', 'animFrames', 'animNombre', 'animInt', 'animSalto'].forEach(id => $(id).addEventListener('input', render));
 ['modo', 'estilo', 'salida'].forEach(id => $(id).addEventListener('change', render));
 $('anim').addEventListener('change', render);
 
