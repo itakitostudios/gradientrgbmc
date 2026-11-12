@@ -2,163 +2,182 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Generador de degradados para Minecraft</title>
 <style>
   * { box-sizing: border-box; }
+  :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
   body {
-    font-family: system-ui, sans-serif;
-    background: #0f0f12; color: #eee;
-    max-width: 900px; margin: 24px auto; padding: 0 16px;
+    font-family: system-ui, sans-serif; background: #f4f5fa; color: #1f2430;
+    max-width: 1100px; margin: 12px auto; padding: 0 12px;
   }
-  h1 { font-size: 22px; margin: 0 0 14px; }
-  h3 { font-size: 13px; color: #c4b5fd; margin: 0 0 8px; text-transform: uppercase; letter-spacing: 1px; }
-  label { font-size: 13px; color: #aaa; }
-  .panel {
-    background: #181818; border: 1px solid #2a2a2a; border-radius: 12px;
-    padding: 14px; margin-bottom: 14px;
-  }
-  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-  .sec { margin-bottom: 14px; }
-  .sec:last-child { margin-bottom: 0; }
+  h1 { font-size: 20px; margin: 0 0 10px; }
+  h3 { font-size: 12px; color: #6d28d9; margin: 0 0 6px; text-transform: uppercase; letter-spacing: 1px; }
+  label { font-size: 13px; color: #555; }
+  .panel { background: #fff; border: 1px solid #dfe2ee; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+  .row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px 18px; }
+  .sec { margin-bottom: 4px; }
   select, textarea, input[type=number], input[type=text] {
-    padding: 9px; border-radius: 8px; border: 1px solid #333;
-    background: #1c1c1c; color: #eee; font-size: 15px; font-family: inherit;
+    padding: 7px; border-radius: 8px; border: 1px solid #ccd0e0;
+    background: #fff; color: #1f2430; font-size: 14px; font-family: inherit;
   }
-  input[type=number] { width: 90px; }
-  input[type=text] { width: 180px; }
+  input[type=number] { width: 70px; }
+  input[type=text] { width: 150px; }
   textarea { width: 100%; resize: vertical; }
-  input[type=color] { width: 46px; height: 38px; border: none; background: none; cursor: pointer; padding: 0; }
-  .checks label { color: #ddd; display: inline-flex; gap: 5px; align-items: center; font-size: 14px; }
-  .btn {
-    padding: 8px 12px; border: 1px solid #333; border-radius: 8px;
-    background: #222; color: #eee; font-size: 14px; cursor: pointer;
-  }
-  .btn:hover { background: #2c2c2c; }
-  .btn.principal { background: #7c3aed; border-color: #7c3aed; font-weight: bold; }
+  input[type=color] { width: 42px; height: 34px; border: none; background: none; cursor: pointer; padding: 0; }
+  .checks label { color: #333; display: inline-flex; gap: 4px; align-items: center; font-size: 13px; }
+  .btn { padding: 6px 10px; border: 1px solid #ccd0e0; border-radius: 8px; background: #f0f1f8; color: #1f2430; font-size: 13px; cursor: pointer; }
+  .btn:hover { background: #e4e6f3; }
+  .btn.principal { background: #7c3aed; border-color: #7c3aed; color: #fff; font-weight: bold; }
   .btn.principal:hover { background: #6d28d9; }
-  .btn.emo { font-size: 19px; padding: 3px 8px; }
-  .btn.borrar { color: #f87171; }
+  .btn.emo { font-size: 18px; padding: 2px 7px; }
 
-  .big {
-    background: #000; border: 1px solid #2a2a2a; border-radius: 14px;
-    padding: 20px; margin-bottom: 14px;
-  }
+  .big { background: #16161c; border-radius: 14px; padding: 14px; margin-bottom: 10px; }
   .pv-big {
-    font-family: 'Courier New', monospace; font-size: 54px; font-weight: bold;
+    font-family: 'Courier New', monospace; font-size: 40px; font-weight: bold;
     text-shadow: 3px 3px 0 rgba(0,0,0,.6); text-align: center;
-    min-height: 90px; display: flex; flex-direction: column; justify-content: center;
-    line-height: 1.3; word-break: break-word;
+    min-height: 64px; display: flex; flex-direction: column; justify-content: center;
+    line-height: 1.25; word-break: break-word;
   }
   .pv-big .linea { white-space: pre-wrap; }
-  .vacio { color: #666; font-size: 14px; text-align: center; font-family: system-ui, sans-serif; }
-  .emojis { margin: 14px 0 10px; }
+  .vacio { color: #888; font-size: 14px; text-align: center; font-family: system-ui, sans-serif; }
+  .emojis { margin: 8px 0; }
+  .big textarea { background: #22222b; color: #eee; border-color: #3a3a46; }
+  .big .aviso { color: #9a9aaa; }
 
-  .fila2 { display: grid; grid-template-columns: 170px 1fr; gap: 14px; margin-bottom: 14px; }
-  .sq {
-    background: #181818; border: 1px solid #2a2a2a; border-radius: 12px;
-    padding: 12px; aspect-ratio: 1; display: flex; flex-direction: column; gap: 6px; overflow: auto;
-  }
+  .fila2 { display: grid; grid-template-columns: 170px 1fr; gap: 10px; margin-bottom: 10px; }
+  .sq { background: #fff; border: 1px solid #dfe2ee; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 5px; max-height: 260px; overflow: auto; }
   .chip { display: flex; align-items: center; gap: 8px; font-family: monospace; font-size: 13px; }
-  .chip span.c { width: 26px; height: 26px; border-radius: 6px; border: 1px solid #333; flex: 0 0 auto; }
-  .rect {
-    background: #181818; border: 1px solid #2a2a2a; border-radius: 12px; padding: 12px;
-    display: flex; flex-direction: column; gap: 10px;
-  }
+  .chip span.c { width: 24px; height: 24px; border-radius: 6px; border: 1px solid #ccd0e0; flex: 0 0 auto; }
+  .rect { background: #fff; border: 1px solid #dfe2ee; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
   .codigo {
-    background: #1c1c1c; border: 1px solid #333; border-radius: 8px;
-    padding: 10px; font-family: monospace; font-size: 13px; color: #d4d4d8;
-    white-space: pre-wrap; word-break: break-all; min-height: 60px; flex: 1;
+    background: #f4f5fa; border: 1px solid #ccd0e0; border-radius: 8px; padding: 8px;
+    font-family: monospace; font-size: 12px; color: #2a2f3d; white-space: pre-wrap; word-break: break-all;
+    min-height: 44px; max-height: 180px; overflow: auto; flex: 1;
   }
-  .fila { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; }
-  .favgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+  .fila { display: flex; gap: 6px; align-items: flex-start; margin-bottom: 6px; }
+  .favgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 6px; }
   .tile {
-    aspect-ratio: 1; background: #1c1c1c; border: 1px solid #333; border-radius: 10px;
-    color: #eee; font-size: 13px; cursor: pointer; padding: 8px; position: relative;
-    display: flex; align-items: center; justify-content: center; text-align: center;
-    word-break: break-word; overflow: hidden;
+    aspect-ratio: 1.4; background: #f4f5fa; border: 1px solid #ccd0e0; border-radius: 10px; color: #1f2430;
+    font-size: 12px; cursor: pointer; padding: 6px; position: relative; display: flex;
+    align-items: center; justify-content: center; text-align: center; word-break: break-word; overflow: hidden;
   }
-  .tile:hover { background: #262626; }
-  .tile .x {
-    position: absolute; top: 2px; right: 4px; color: #f87171; font-size: 16px;
-    padding: 2px 4px; cursor: pointer;
-  }
+  .tile:hover { background: #e9ebf6; }
+  .tile .x { position: absolute; top: 0; right: 4px; color: #dc2626; font-size: 16px; padding: 2px 4px; cursor: pointer; }
   .aviso { font-size: 12px; color: #777; }
   .anim-off { opacity: .45; }
+  .abajo { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 10px; }
+  .abajo .panel { margin-bottom: 0; }
+
+  #loader {
+    position: fixed; inset: 0; z-index: 99; background: #f4f5fa;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
+    transition: opacity .5s;
+  }
+  #loader.fuera { opacity: 0; pointer-events: none; }
+  #loader h2 {
+    margin: 0; font-family: 'Courier New', monospace; font-size: clamp(24px, 6vw, 46px); text-align: center; padding: 0 12px;
+    background: linear-gradient(90deg, #ff4ecd, #8b5cf6, #22d3ee, #ff4ecd); background-size: 300% 100%;
+    -webkit-background-clip: text; background-clip: text; color: transparent; animation: mover 2s linear infinite;
+  }
+  @keyframes mover { to { background-position: 300% 0; } }
+  .barra { width: min(380px, 80vw); height: 16px; background: #dfe2ee; border: 2px solid #1f2430; border-radius: 4px; overflow: hidden; }
+  .barra div { height: 100%; width: 0; background: linear-gradient(90deg, #ff4ecd, #8b5cf6, #22d3ee); transition: width .15s; }
+  #loadPct { font-size: 13px; color: #555; font-family: monospace; margin-top: -12px; }
+
   @media (max-width: 640px) {
     .fila2 { grid-template-columns: 1fr; }
-    .sq { aspect-ratio: auto; }
-    .pv-big { font-size: 36px; }
+    .sq { max-height: 140px; }
+    .pv-big { font-size: 30px; }
   }
 </style>
 </head>
 <body>
 
+<div id="loader">
+  <h2>DEGRADADOS PARA MINECRAFT</h2>
+  <div class="barra"><div id="loadBar"></div></div>
+  <div id="loadPct">0%</div>
+</div>
+
 <h1>Generador de degradados para Minecraft</h1>
 
-<!-- ARRIBA: colores, estilo y formato -->
 <div class="panel">
-  <div class="sec">
-    <h3>Colores</h3>
-    <div class="row" id="stops"></div>
-    <div class="row" style="margin-top:8px">
-      <button class="btn" id="agregar">+ Color</button>
-      <button class="btn" id="quitar">− Color</button>
-      <button class="btn" id="invertir">⇄ Invertir</button>
-      <label>Modo:</label>
-      <select id="modo">
-        <option value="degradado">Degradado</option>
-        <option value="arcoiris">Arcoíris automático</option>
+  <div class="grid2">
+    <div class="sec">
+      <h3>Colores</h3>
+      <div class="row" id="stops"></div>
+      <div class="row" style="margin-top:6px">
+        <button class="btn" id="agregar">+ Color</button>
+        <button class="btn" id="quitar">− Color</button>
+        <button class="btn" id="invertir">⇄ Invertir</button>
+        <select id="modo">
+          <option value="degradado">Degradado</option>
+          <option value="arcoiris">Arcoíris automático</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h3>Estilo de letra</h3>
+      <select id="estilo">
+        <option value="normal">Normal</option>
+        <option value="mini">Mini Caps ᴍɪɴɪ</option>
+        <option value="negrita">Negrita 𝐁𝐨𝐥𝐝</option>
+        <option value="cursiva">Cursiva 𝘐𝘵𝘢𝘭𝘪𝘤</option>
+        <option value="negritacursiva">Negrita cursiva 𝑩𝒐𝒍𝒅</option>
+        <option value="gotica">Gótica 𝔊𝔬𝔱𝔦𝔠</option>
+        <option value="monoespacio">Monoespacio 𝙼𝚘𝚗𝚘</option>
+        <option value="circulo">Círculo Ⓒⓘⓡⓒ</option>
+        <option value="cuadrado">Cuadrado 🅒🅤🅐</option>
       </select>
     </div>
-  </div>
 
-  <div class="sec">
-    <h3>Estilo de letra</h3>
-    <select id="estilo">
-      <option value="normal">Normal</option>
-      <option value="mini">Mini Caps ᴍɪɴɪ</option>
-      <option value="negrita">Negrita 𝐁𝐨𝐥𝐝</option>
-      <option value="cursiva">Cursiva 𝘐𝘵𝘢𝘭𝘪𝘤</option>
-      <option value="negritacursiva">Negrita cursiva 𝑩𝒐𝒍𝒅</option>
-      <option value="gotica">Gótica 𝔊𝔬𝔱𝔦𝔠</option>
-      <option value="monoespacio">Monoespacio 𝙼𝚘𝚗𝚘</option>
-      <option value="circulo">Círculo Ⓒⓘⓡⓒ</option>
-      <option value="cuadrado">Cuadrado 🅒🅤🅐</option>
-    </select>
-  </div>
-
-  <div class="sec">
-    <h3>Formato</h3>
-    <div class="row checks">
-      <label><input type="checkbox" id="f-l"> Negrita &amp;l</label>
-      <label><input type="checkbox" id="f-o"> Cursiva &amp;o</label>
-      <label><input type="checkbox" id="f-n"> Subrayado &amp;n</label>
-      <label><input type="checkbox" id="f-m"> Tachado &amp;m</label>
-      <label><input type="checkbox" id="f-k"> Ofuscado &amp;k</label>
+    <div class="sec">
+      <h3>Formato</h3>
+      <div class="row checks">
+        <label><input type="checkbox" id="f-l"> Negrita &amp;l</label>
+        <label><input type="checkbox" id="f-o"> Cursiva &amp;o</label>
+        <label><input type="checkbox" id="f-n"> Subrayado &amp;n</label>
+        <label><input type="checkbox" id="f-m"> Tachado &amp;m</label>
+        <label><input type="checkbox" id="f-k"> Ofuscado &amp;k</label>
+      </div>
+      <div class="row" style="margin-top:6px">
+        <label>Salida:</label>
+        <select id="salida">
+          <option value="minimessage">MiniMessage</option>
+          <option value="hex" selected>&amp;#rrggbb&amp;l</option>
+          <option value="json">JSON</option>
+          <option value="seccion">§x§r§r§g§g§b§b§l</option>
+          <option value="ampx">&amp;x&amp;r&amp;r&amp;g&amp;g&amp;b&amp;b&amp;l</option>
+          <option value="shorthand">&lt;#rrggbb&gt;&amp;l</option>
+          <option value="bbcode">[COLOR=#rrggbb][/COLOR]</option>
+          <option value="mmcolor">MiniMessage &lt;color:#hex&gt;</option>
+          <option value="mmshort">MiniMessage corto &lt;#hex&gt; (etiquetas)</option>
+          <option value="custom">Custom Format</option>
+          <option value="plano">Solo texto (sin color)</option>
+        </select>
+      </div>
+      <div class="row" id="customRow" style="margin-top:6px; display:none">
+        <label>Plantilla:</label>
+        <input type="text" id="custom" value="&amp;#{hex}{fmt}{text}" style="width:230px">
+        <span class="aviso">{hex} {r} {g} {b} {fmt} {text} — se repite por cada tramo de color</span>
+      </div>
     </div>
-    <div class="row" style="margin-top:8px">
-      <label>Salida:</label>
-      <select id="salida">
-        <option value="hex">&amp;#RRGGBB (plugins con hex)</option>
-        <option value="minimessage">MiniMessage &lt;color:#hex&gt;</option>
-        <option value="shorthand">MiniMessage corto &lt;#hex&gt;</option>
-        <option value="plano">Solo texto (sin color)</option>
-      </select>
+
+    <div class="sec">
+      <h3>Presets</h3>
+      <div class="row" id="presets"></div>
     </div>
   </div>
 
-  <div class="sec">
-    <h3>Presets</h3>
-    <div class="row" id="presets"></div>
-  </div>
-
-  <div class="sec">
+  <div class="sec" style="margin-top:10px">
     <h3>Animación para TAB</h3>
     <div class="row checks">
       <label><input type="checkbox" id="anim"> Activar animación (degradado que se mueve)</label>
     </div>
-    <div class="row" id="animPanel" style="margin-top:8px">
+    <div class="row" id="animPanel" style="margin-top:6px">
       <label>Frames:</label>
       <input type="number" id="animFrames" value="12" min="2" max="60">
       <label>Intervalo (seg):</label>
@@ -168,15 +187,13 @@
       <label>Nombre:</label>
       <input type="text" id="animNombre" value="DEGRADADO">
     </div>
-    <p class="aviso" id="ciclo" style="margin:6px 0 0"></p>
-    <p class="aviso" style="margin:4px 0 0">
-      Saltos por frame: 1 = movimiento suave. 2 o 3 = más rápido, con cada frame avanzando más.
-      La animación siempre sale en &amp;#RRGGBB, que es lo que TAB soporta.
+    <p class="aviso" id="ciclo" style="margin:4px 0 0"></p>
+    <p class="aviso" style="margin:2px 0 0">
+      Saltos por frame: 1 = movimiento suave. 2 o 3 = más rápido. La animación siempre sale en &amp;#RRGGBB, que es lo que TAB soporta.
     </p>
   </div>
 </div>
 
-<!-- CUADRO GRANDE: la palabra -->
 <div class="big">
   <div class="pv-big" id="previews"></div>
   <div class="emojis row">
@@ -194,10 +211,9 @@
     <button class="btn emo" data-e="☠️">☠️</button>
   </div>
   <textarea id="texto" rows="2">DEGRADADO</textarea>
-  <p class="aviso" style="margin:6px 0 0">Escribe varias líneas para generar un código por cada una.</p>
+  <p class="aviso" style="margin:4px 0 0">Escribe varias líneas para generar un código por cada una.</p>
 </div>
 
-<!-- DEBAJO: colores + código -->
 <div class="fila2">
   <div class="sq" id="chips"></div>
   <div class="rect">
@@ -207,29 +223,45 @@
   </div>
 </div>
 
-<!-- FAVORITOS -->
-<div class="panel">
-  <div class="row" style="justify-content:space-between; margin-bottom:10px">
-    <h3 style="margin:0">Favoritos</h3>
-    <button class="btn principal" id="guardarFav">⭐ Guardar favorito</button>
+<div class="abajo">
+  <div class="panel">
+    <div class="row" style="justify-content:space-between; margin-bottom:8px">
+      <h3 style="margin:0">Favoritos</h3>
+      <button class="btn principal" id="guardarFav">⭐ Guardar favorito</button>
+    </div>
+    <div class="favgrid" id="favs"></div>
   </div>
-  <div class="favgrid" id="favs"></div>
-</div>
 
-<!-- CONVERTIDOR INVERSO -->
-<div class="panel">
-  <h3>Convertidor inverso</h3>
-  <label>Pega aquí un código &amp;#RRGGBB para verlo y editarlo:</label>
-  <textarea id="conv" rows="2" placeholder="&#FF4ECD&lH&#EE55D9&lo..." style="margin-top:6px"></textarea>
-  <div class="row" style="margin-top:8px">
-    <button class="btn" id="ver">Ver vista previa</button>
-    <button class="btn" id="pasar">Pasar al editor</button>
+  <div class="panel">
+    <h3>Convertidor inverso</h3>
+    <label>Pega aquí un código &amp;#RRGGBB para verlo y editarlo:</label>
+    <textarea id="conv" rows="2" placeholder="&#FF4ECD&lH&#EE55D9&lo..." style="margin-top:4px"></textarea>
+    <div class="row" style="margin-top:6px">
+      <button class="btn" id="ver">Ver vista previa</button>
+      <button class="btn" id="pasar">Pasar al editor</button>
+    </div>
+    <div class="big" style="margin:8px 0 0; padding:8px">
+      <div class="pv-big" id="convPrev" style="font-size:26px; min-height:40px"></div>
+    </div>
   </div>
-  <div class="pv-big" id="convPrev" style="font-size:30px; min-height:50px; margin-top:10px"></div>
 </div>
 
 <script>
 const $ = id => document.getElementById(id);
+
+/* ---------- Pantalla de carga ---------- */
+(function () {
+  let p = 0;
+  const t = setInterval(() => {
+    p = Math.min(100, p + 4 + Math.random() * 9);
+    $('loadBar').style.width = p + '%';
+    $('loadPct').textContent = Math.floor(p) + '%';
+    if (p >= 100) {
+      clearInterval(t);
+      setTimeout(() => { $('loader').classList.add('fuera'); setTimeout(() => $('loader').remove(), 600); }, 250);
+    }
+  }, 90);
+})();
 
 /* ---------- Utilidades ---------- */
 const hex2 = n => Math.round(Math.max(0, Math.min(255, n))).toString(16).padStart(2, '0').toUpperCase();
@@ -251,7 +283,6 @@ function colorAt(stops, t) {
   const a = hexToRgb(stops[i]), b = hexToRgb(stops[i + 1]);
   return a.map((v, k) => v + (b[k] - v) * f);
 }
-// Degradado cíclico: el último color vuelve al primero, para que la animación sea continua
 function colorCiclico(stops, t) {
   const loop = stops.concat([stops[0]]);
   t = ((t % 1) + 1) % 1;
@@ -295,14 +326,15 @@ const ESTILOS = {
 /* ---------- Estado ---------- */
 const FK = ['l', 'o', 'n', 'm', 'k'];
 const FMT_MM = { l:'bold', o:'italic', n:'underlined', m:'strikethrough', k:'obfuscated' };
+const FMT_JSON = FMT_MM;
+const FMT_BB = { l:'B', o:'I', n:'U', m:'S' };
 let stops = ['#ff4ecd', '#8b5cf6', '#22d3ee'];
 let codigos = [];
-let lineasFrames = [];   // frames por línea (solo en animación)
+let lineasFrames = [];
 let frameActual = 0;
 let timerAnim = null;
 
 /* ---------- Construcción de caracteres ---------- */
-// off = null -> degradado normal; off = número -> frame de animación (cíclico)
 function construirItems(linea, cfg, off = null) {
   const chars = separar(linea);
   const estiloFn = ESTILOS[cfg.estilo] || ESTILOS.normal;
@@ -341,17 +373,54 @@ function agrupar(items) {
   }
   return runs;
 }
-function encode(items, salida) {
+function encode(items, salida, cfg) {
   if (salida === 'plano') return items.map(i => i.ch).join('');
-  return agrupar(items).map(r => {
+  const fmtAct = items.length ? FK.filter(k => items[0].fmt[k]) : [];
+
+  if (salida === 'minimessage' && cfg) {
+    const txt = items.map(i => i.ch).join('').replace(/</g, '\\<');
+    const tag = cfg.modo === 'arcoiris' ? 'rainbow' : 'gradient:' + cfg.stops.map(s => s.toLowerCase()).join(':');
+    const close = cfg.modo === 'arcoiris' ? 'rainbow' : 'gradient';
+    const open = fmtAct.map(k => `<${FMT_MM[k]}>`).join('');
+    const cl = fmtAct.slice().reverse().map(k => `</${FMT_MM[k]}>`).join('');
+    return `${open}<${tag}>${txt}</${close}>${cl}`;
+  }
+
+  const runs = agrupar(items);
+
+  if (salida === 'json') {
+    const arr = [''];
+    runs.forEach(r => {
+      const o = { text: r.text, color: r.color.toLowerCase() };
+      FK.forEach(k => { if (r.fmt[k]) o[FMT_JSON[k]] = true; });
+      arr.push(o);
+    });
+    return JSON.stringify(arr);
+  }
+
+  return runs.map(r => {
     const activos = FK.filter(k => r.fmt[k]);
-    if (salida === 'hex') {
-      return '&#' + r.color.slice(1) + activos.map(k => '&' + k).join('') + r.text;
+    const hx = r.color.slice(1);
+    const amp = activos.map(k => '&' + k).join('');
+    if (salida === 'hex') return '&#' + hx + amp + r.text;
+    if (salida === 'seccion') return '§x' + hx.split('').map(c => '§' + c).join('') + activos.map(k => '§' + k).join('') + r.text;
+    if (salida === 'ampx') return '&x' + hx.split('').map(c => '&' + c).join('') + amp + r.text;
+    if (salida === 'shorthand') return `<#${hx}>` + amp + r.text;
+    if (salida === 'bbcode') {
+      const bb = activos.filter(k => FMT_BB[k]);
+      return `[COLOR=#${hx}]` + bb.map(k => `[${FMT_BB[k]}]`).join('') + r.text +
+             bb.slice().reverse().map(k => `[/${FMT_BB[k]}]`).join('') + '[/COLOR]';
+    }
+    if (salida === 'custom') {
+      const [R, G, B] = hexToRgb(hx);
+      return (cfg && cfg.custom ? cfg.custom : '&#{hex}{fmt}{text}')
+        .split('{hex}').join(hx).split('{r}').join(R).split('{g}').join(G).split('{b}').join(B)
+        .split('{fmt}').join(amp).split('{text}').join(r.text);
     }
     const texto = r.text.replace(/</g, '\\<');
     const open = activos.map(k => `<${FMT_MM[k]}>`).join('');
     const close = activos.slice().reverse().map(k => `</${FMT_MM[k]}>`).join('');
-    if (salida === 'shorthand') return `<${r.color}>${open}${texto}${close}`;
+    if (salida === 'mmshort') return `<${r.color}>${open}${texto}${close}`;
     return `<color:${r.color}>${open}${texto}${close}</color>`;
   }).join('');
 }
@@ -390,6 +459,7 @@ function leerCfg() {
     modo: $('modo').value,
     estilo: $('estilo').value,
     salida: $('salida').value,
+    custom: $('custom').value,
     fmt: { l: $('f-l').checked, o: $('f-o').checked, n: $('f-n').checked, m: $('f-m').checked, k: $('f-k').checked },
     anim: $('anim').checked,
     frames: Math.max(2, Math.min(60, parseInt($('animFrames').value) || 12)),
@@ -403,6 +473,7 @@ function leerCfg() {
 function render() {
   const cfg = leerCfg();
   $('animPanel').classList.toggle('anim-off', !cfg.anim);
+  $('customRow').style.display = cfg.salida === 'custom' ? 'flex' : 'none';
   const lineas = cfg.texto.split('\n').map(l => l.trim()).filter(l => l.length);
   codigos = [];
   lineasFrames = [];
@@ -424,7 +495,6 @@ function render() {
     lineas.forEach((l, i) => {
       const frames = [];
       for (let k = 0; k < cfg.frames; k++) {
-        // Cada frame avanza "salto" pasos del ciclo completo
         const off = (k * cfg.salto) / cfg.frames;
         frames.push(construirItems(l, cfg, off));
       }
@@ -432,7 +502,7 @@ function render() {
       const nombre = lineas.length > 1 ? `${cfg.nombre}_${i + 1}` : cfg.nombre;
       const yaml =
         `animations:\n  ${nombre}:\n    texts:\n` +
-        frames.map(fr => `      - ${yamlStr(encode(fr, 'hex'))}`).join('\n') +
+        frames.map(fr => `      - ${yamlStr(encode(fr, 'hex', cfg))}`).join('\n') +
         `\n    change-interval: ${cfg.intervalo}`;
       codigos.push(yaml);
       sv += `<div class="fila"><div class="codigo">${escapeHtml(yaml)}</div>` +
@@ -449,7 +519,7 @@ function render() {
     $('avisoCodigo').innerHTML = 'Pégalo en el plugin, por ejemplo:<br>/hologram edit Coinshop setline 1 &lt;código&gt;';
     lineas.forEach((l, i) => {
       const items = construirItems(l, cfg);
-      const code = encode(items, cfg.salida);
+      const code = encode(items, cfg.salida, cfg);
       codigos.push(code);
       sv += `<div class="fila"><div class="codigo">${escapeHtml(code)}</div>` +
             `<button class="btn" onclick="copiarLinea(${i}, this)">Copiar</button></div>`;
@@ -462,7 +532,7 @@ function render() {
   renderChips();
 }
 
-/* ---------- Vista previa grande (con animación) ---------- */
+/* ---------- Vista previa grande ---------- */
 function renderPreview(frameIdx) {
   const cfg = leerCfg();
   const lineas = cfg.texto.split('\n').map(l => l.trim()).filter(l => l.length);
@@ -599,6 +669,7 @@ function cargarFav(fav) {
   $('modo').value = fav.modo;
   $('estilo').value = fav.estilo;
   $('salida').value = fav.salida;
+  if (fav.custom) $('custom').value = fav.custom;
   setFmt(fav.fmt);
   $('anim').checked = !!fav.anim;
   if (fav.frames) $('animFrames').value = fav.frames;
@@ -669,7 +740,7 @@ $('guardarFav').onclick = guardarFav;
 $('ver').onclick = verConvertidor;
 $('pasar').onclick = pasarAlEditor;
 
-['texto', 'f-l', 'f-o', 'f-n', 'f-m', 'f-k', 'animFrames', 'animNombre', 'animInt', 'animSalto'].forEach(id => $(id).addEventListener('input', render));
+['texto', 'custom', 'f-l', 'f-o', 'f-n', 'f-m', 'f-k', 'animFrames', 'animNombre', 'animInt', 'animSalto'].forEach(id => $(id).addEventListener('input', render));
 ['modo', 'estilo', 'salida'].forEach(id => $(id).addEventListener('change', render));
 $('anim').addEventListener('change', render);
 
